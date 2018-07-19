@@ -20,6 +20,7 @@ import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import com.example.user.xmppchat.ChatBubble2;
 import com.example.user.xmppchat.Friends;
 import com.example.user.xmppchat.Group_ChatActivity;
 import com.example.user.xmppchat.Group_activity;
@@ -120,14 +121,13 @@ public class Frag_Groups extends BaseFragment {
                                     Log.d("message", message.getBody());
                                     if (message.getBody() != null) {
                                         try {
-                                            String from=message.getFrom();
-                                           if((Group_ChatActivity.receiver+"/"+Group_ChatActivity.sender).equals(from))
+                                           if((Group_ChatActivity.receiver+"/"+Group_ChatActivity.sender).equals(message.getFrom()))
                                            {
                                                myMessage=true;
                                            }
                                            else
                                                myMessage=false;
-                                            Group_ChatActivity.context.chatting_grp(message.getBody(), myMessage);
+                                            Group_ChatActivity.context.chatting_grp(message.getBody(), myMessage, message.getSubject());
                                         } catch (SmackException.NotConnectedException e) {
                                             e.printStackTrace();
                                         }
@@ -166,7 +166,7 @@ public class Frag_Groups extends BaseFragment {
 
                         MultiUserChat muc = Mmanager.getMultiUserChat(group_name + "@conference.test");
                         try {
-                            muc.create(group_name + "Group");
+                            muc.create(MyXMPP.connection.getUser());
                             PubSubManager mgr = new PubSubManager(MyXMPP.connection);
                             LeafNode leaf = mgr.createNode(group_name);
                             ConfigureForm form = new ConfigureForm(DataForm.Type.submit);

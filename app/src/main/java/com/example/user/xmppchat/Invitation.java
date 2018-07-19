@@ -99,7 +99,7 @@ public class Invitation extends AppCompatActivity {
                 }
             });
 
-            muc.sendMessage(usename + " has joined the room ");
+            //muc.sendMessage(usename + " has joined the room ");
 
 
         } catch (SmackException.NotConnectedException e) {

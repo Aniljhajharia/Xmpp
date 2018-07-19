@@ -50,7 +50,7 @@ ArrayList<String> arrayList=new ArrayList<>();
                                 Log.d("message",message.getBody());
                                 if(message.getBody()!=null) {
                                     try {
-                                        Group_ChatActivity.context.chatting_grp(message.getBody(),true);
+                                        Group_ChatActivity.context.chatting_grp(message.getBody(),true,message.getSubject());
                                     } catch (SmackException.NotConnectedException e) {
                                         e.printStackTrace();
                                     }

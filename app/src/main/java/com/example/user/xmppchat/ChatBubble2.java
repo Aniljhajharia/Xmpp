@@ -3,10 +3,12 @@ package com.example.user.xmppchat;
 public class ChatBubble2 {
     private String content;
     private boolean myMessage;
+    String tag;
 
-    public ChatBubble2(String content, boolean myMessage) {
+    public ChatBubble2(String content, boolean myMessage, String tag) {
         this.content = content;
         this.myMessage = myMessage;
+        this.tag = tag;
     }
 
     public String getContent() {
@@ -15,5 +17,9 @@ public class ChatBubble2 {
 
     public boolean myMessage() {
         return myMessage;
+    }
+
+    public String Tag() {
+        return tag;
     }
 }

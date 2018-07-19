@@ -85,8 +85,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 
-
-public class MyXMPP  implements PingFailedListener {
+public class MyXMPP implements PingFailedListener {
     private static Context context_main2;
     private String serverAddress;
     private static byte[] dataReceived;
@@ -106,7 +105,7 @@ public class MyXMPP  implements PingFailedListener {
     boolean auth;
     Gson gson;
     boolean tag;
-    ChatActivity chatActivity=new ChatActivity();
+    ChatActivity chatActivity = new ChatActivity();
     public static MyXMPP instance = null;
     public static boolean instanceCreated = false;
 
@@ -142,6 +141,7 @@ public class MyXMPP  implements PingFailedListener {
     MMessageListener mMessageListener;
 
     private FileTransferManager manager;
+
     public void init() {
         gson = new Gson();
         initialiseConnection();
@@ -193,7 +193,8 @@ public class MyXMPP  implements PingFailedListener {
                                 final boolean createdLocally) {
             chat.addMessageListener(mMessageListener);
             String groupName = String.valueOf(chat.getParticipant());
-            setInvitationListener(groupName);
+            String name=MyXMPP.connection.getUser();
+            setInvitationListener(MyXMPP.connection.getUser().substring(0,name.length()-11));
 
         }
 
@@ -207,15 +208,6 @@ public class MyXMPP  implements PingFailedListener {
             public void invitationReceived(XMPPConnection conn, MultiUserChat room, String inviter, String reason, String password, Message message) {
                 try {
                     room.join(groupName);
-                    PubSubManager mgr = new PubSubManager(connection);
-                    LeafNode node = mgr.getNode(groupName);
-                    node.addItemEventListener(new ItemEventListener() {
-                        @Override
-                        public void handlePublishedItems(ItemPublishEvent items) {
-
-                        }
-                    });
-                    node.subscribe(sender);
                 } catch (SmackException.NoResponseException e) {
                     e.printStackTrace();
                 } catch (XMPPException.XMPPErrorException e) {
@@ -241,8 +233,8 @@ public class MyXMPP  implements PingFailedListener {
                             && message.getBody() != null) {
                         Toast.makeText(context, "message -" + "" + message.getBody(), Toast.LENGTH_LONG).show();
 
-                        if(connection.getUser()!=null)
-                           chatActivity.chatting( message.getBody(),message.getSubject());
+                        if (connection.getUser() != null)
+                            chatActivity.chatting(message.getBody(), message.getSubject());
 
                     }
 
@@ -320,7 +312,7 @@ public class MyXMPP  implements PingFailedListener {
         }
     }
 
-    public void sendMessage(String sender, String receiver, String message, Context context,String tag) {
+    public void sendMessage(String sender, String receiver, String message, Context context, String tag) {
         context_chat = context;
         receiver_xmpp = receiver;
         this.sender = sender;
@@ -352,12 +344,14 @@ public class MyXMPP  implements PingFailedListener {
         }
     }
 
-    public void sendMessage_grp(String sender, String receiver, String message, Context context) throws SmackException.NotConnectedException {
+    public void sendMessage_grp(String sender, String receiver, String message, Context context, String tag) throws SmackException.NotConnectedException {
         context_grp = context;
         this.receiver = receiver;
         Message msg = new Message(receiver, Message.Type.groupchat);
         msg.setBody(message);
+        msg.setSubject(tag);
         connection.sendStanza(msg);
+
 
     }
 
@@ -439,43 +433,43 @@ public class MyXMPP  implements PingFailedListener {
     }
 
 
-  /*  public class FileTransferIMPL implements FileTransferListener {
+    /*  public class FileTransferIMPL implements FileTransferListener {
+
+          @Override
+          public void fileTransferRequest(final FileTransferRequest request) {
+              final IncomingFileTransfer transfer = request.accept();
+              try {
+                  InputStream is = transfer.recieveFile();
+                  ByteArrayOutputStream os = new ByteArrayOutputStream();
+                  int nRead;
+                  byte[] buf = new byte[1024];
+                  try {
+                      while ((nRead = is.read(buf, 0, buf.length)) != -1) {
+                          os.write(buf, 0, nRead);
+                      }
+                      os.flush();
+                  } catch (IOException e) {
+                      e.printStackTrace();
+                  }
+                  dataReceived = os.toByteArray();
+                  createDirectoryAndSaveFile(dataReceived, request.getFileName());
+                  Log.i("File Received", transfer.getFileName());
+                  processMessage(request);
+              } catch (XMPPException ex) {
+                  Logger.getLogger(MyXMPP.class.getName()).log(Level.SEVERE, null, ex);
+              } catch (SmackException e) {
+                  e.printStackTrace();
+              }
+          }
+      }*/
+    public class FileTransferIMPL implements FileTransferListener {
 
         @Override
-        public void fileTransferRequest(final FileTransferRequest request) {
+        public void fileTransferRequest(FileTransferRequest request) {
             final IncomingFileTransfer transfer = request.accept();
-            try {
-                InputStream is = transfer.recieveFile();
-                ByteArrayOutputStream os = new ByteArrayOutputStream();
-                int nRead;
-                byte[] buf = new byte[1024];
-                try {
-                    while ((nRead = is.read(buf, 0, buf.length)) != -1) {
-                        os.write(buf, 0, nRead);
-                    }
-                    os.flush();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-                dataReceived = os.toByteArray();
-                createDirectoryAndSaveFile(dataReceived, request.getFileName());
-                Log.i("File Received", transfer.getFileName());
-                processMessage(request);
-            } catch (XMPPException ex) {
-                Logger.getLogger(MyXMPP.class.getName()).log(Level.SEVERE, null, ex);
-            } catch (SmackException e) {
-                e.printStackTrace();
-            }
+
         }
-    }*/
-  public class FileTransferIMPL implements FileTransferListener{
-
-      @Override
-      public void fileTransferRequest(FileTransferRequest request) {
-          final IncomingFileTransfer transfer = request.accept();
-
-      }
-  }
+    }
 
     private void createDirectoryAndSaveFile(byte[] imageToSave, String fileName) {
         File direct = new File(Environment.getExternalStorageDirectory() + "/LocShopie/Received/");

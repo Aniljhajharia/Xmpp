@@ -1,6 +1,9 @@
 package com.example.user.xmppchat.Design_Fragment;
 
 
+import android.animation.AnimatorSet;
+import android.animation.ObjectAnimator;
+import android.animation.ValueAnimator;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -12,18 +15,24 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.example.user.xmppchat.Active_users;
 import com.example.user.xmppchat.ChatActivity;
 import com.example.user.xmppchat.Friends;
+import com.example.user.xmppchat.Group_ChatActivity;
 import com.example.user.xmppchat.Group_activity;
+import com.example.user.xmppchat.Invitation;
 import com.example.user.xmppchat.MainActivity;
 import com.example.user.xmppchat.MyXMPP;
 import com.example.user.xmppchat.R;
 
+import org.jivesoftware.smack.ReconnectionManager;
 import org.jivesoftware.smack.SmackException;
 import org.jivesoftware.smack.XMPPException;
 import org.jivesoftware.smack.packet.Presence;
@@ -44,9 +53,10 @@ import java.util.List;
  * A simple {@link Fragment} subclass.
  */
 public class Frag_Friend extends BaseFragment {
-
+    TextView tv1;
     ListView listView, listView2;
     MyXMPP xmpp;
+    ImageView imageView;
     String user, pre;
     ArrayList<String> arrayList = new ArrayList<>();
     ArrayList<String> arrayList2 = new ArrayList<>();
@@ -63,29 +73,42 @@ public class Frag_Friend extends BaseFragment {
         // Inflate the layout for this fragment
         View v = inflater.inflate(R.layout.fragment_frag__friend, container, false);
         listView = v.findViewById(R.id.friends_list_frag);
-        listView2 = v.findViewById(R.id.active_usres);
+        imageView=v.findViewById(R.id.active_frag);
+        //listView2 = v.findViewById(R.id.active_usres);
         SharedPreferences pref = getActivity().getApplicationContext().getSharedPreferences("Login", 0);
         user = pref.getString("sender", null);
         xmpp = new MyXMPP();
         new GetUser().execute();
-        getActiveuser();
+
+        ObjectAnimator scaleDownX = ObjectAnimator.ofFloat(imageView, "scaleX", 0.9f);
+        ObjectAnimator scaleDownY = ObjectAnimator.ofFloat(imageView, "scaleY", 0.9f);
+        scaleDownX.setDuration(1500);
+        scaleDownY.setDuration(1500);
+
+        ObjectAnimator moveUpY = ObjectAnimator.ofFloat(imageView, "translationY", -100);
+
+        moveUpY.setDuration(1500);
+        moveUpY.setRepeatCount(ValueAnimator.INFINITE);
+
+        AnimatorSet scaleDown = new AnimatorSet();
+        AnimatorSet moveUp = new AnimatorSet();
+
+        scaleDown.play(scaleDownX).with(scaleDownY);
+        moveUp.play(moveUpY);
+
+        scaleDown.start();
+        moveUp.start();
+        v.findViewById(R.id.active_frag).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getContext(), Active_users.class);
+                startActivity(intent);
+            }
+        });
         return v;
     }
 
-    public void getActiveuser() {
-        final Roster roster = Roster.getInstanceFor(xmpp.getConnection());
-        Collection<RosterEntry> entries = roster.getEntries();
-        arrayList3.clear();
-        for (RosterEntry entry : entries) {
-            if ((roster.getPresence(entry.getUser()).getStatus()) != null) {
-                if ((roster.getPresence(entry.getUser()).getStatus()).equals("Online"))
-                    arrayList3.add(entry.getUser());
-            }
 
-        }
-        ArrayAdapter arrayAdapter = new ArrayAdapter(getContext(), android.R.layout.simple_list_item_1, arrayList3);
-        listView2.setAdapter(arrayAdapter);
-    }
 
     class GetUser extends AsyncTask<Void, Void, String> {
         private ProgressDialog pd;
@@ -190,6 +213,10 @@ public class Frag_Friend extends BaseFragment {
 
             public void presenceChanged(Presence presence) {
                 pre = presence.getStatus();
+                ReconnectionManager reconnectionManager = ReconnectionManager.getInstanceFor(MyXMPP.connection);
+                reconnectionManager.enableAutomaticReconnection();
+                reconnectionManager.setReconnectionPolicy(ReconnectionManager.ReconnectionPolicy.FIXED_DELAY);
+                reconnectionManager.setFixedDelay(100);
                 System.out.println("Presence changed: " + presence.getFrom() + " " + presence);
             }
         });
