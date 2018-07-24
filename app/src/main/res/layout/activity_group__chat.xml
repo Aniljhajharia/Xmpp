@@ -81,7 +81,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="2dp"
                 android:layout_weight="0.2"
-                android:src="@drawable/ic_image_black_24dp" />
+                android:src="@drawable/ic_share" />
         </LinearLayout>
 
         <ImageView

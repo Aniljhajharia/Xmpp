@@ -1,60 +1,35 @@
 package com.example.user.xmppchat;
 
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.os.AsyncTask;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.Looper;
-import android.support.annotation.NonNull;
-import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.widget.Toast;
 
-import com.example.user.xmppchat.Design_Fragment.ChatBubble;
-import com.example.user.xmppchat.Design_Fragment.MessageAdapter;
 import com.google.gson.Gson;
 
 import org.jivesoftware.smack.ConnectionConfiguration;
 import org.jivesoftware.smack.ConnectionListener;
-import org.jivesoftware.smack.MessageListener;
 import org.jivesoftware.smack.ReconnectionManager;
 import org.jivesoftware.smack.SmackException;
 import org.jivesoftware.smack.StanzaListener;
 import org.jivesoftware.smack.XMPPConnection;
 import org.jivesoftware.smack.XMPPException;
-import org.jivesoftware.smack.packet.IQ;
 import org.jivesoftware.smackx.filetransfer.FileTransfer;
 import org.jivesoftware.smackx.filetransfer.FileTransferListener;
 import org.jivesoftware.smackx.filetransfer.FileTransferManager;
 import org.jivesoftware.smackx.filetransfer.FileTransferRequest;
 import org.jivesoftware.smackx.filetransfer.IncomingFileTransfer;
 import org.jivesoftware.smackx.filetransfer.OutgoingFileTransfer;
-import org.jivesoftware.smackx.pubsub.AccessModel;
-import org.jivesoftware.smackx.pubsub.CollectionNode;
-import org.jivesoftware.smackx.pubsub.ConfigureForm;
-import org.jivesoftware.smackx.pubsub.ConfigureNodeFields;
-import org.jivesoftware.smackx.pubsub.FormNode;
-import org.jivesoftware.smackx.pubsub.FormNodeType;
-import org.jivesoftware.smackx.pubsub.ItemPublishEvent;
-import org.jivesoftware.smackx.pubsub.LeafNode;
-import org.jivesoftware.smackx.pubsub.Node;
-import org.jivesoftware.smackx.pubsub.NodeExtension;
-import org.jivesoftware.smackx.pubsub.NodeType;
-import org.jivesoftware.smackx.pubsub.PubSubElementType;
-import org.jivesoftware.smackx.pubsub.PubSubManager;
-import org.jivesoftware.smackx.pubsub.PublishModel;
-import org.jivesoftware.smackx.pubsub.listener.ItemEventListener;
-import org.jivesoftware.smackx.pubsub.packet.PubSub;
-import org.jivesoftware.smack.chat.Chat;
 import org.jivesoftware.smack.chat.ChatManager;
 import org.jivesoftware.smack.chat.ChatManagerListener;
 import org.jivesoftware.smack.chat.ChatMessageListener;
 import org.jivesoftware.smack.packet.Message;;
 import org.jivesoftware.smack.packet.Stanza;
 import org.jivesoftware.smack.roster.Roster;
-import org.jivesoftware.smack.roster.RosterEntry;
 import org.jivesoftware.smack.sasl.SASLErrorException;
 import org.jivesoftware.smack.tcp.XMPPTCPConnection;
 import org.jivesoftware.smack.tcp.XMPPTCPConnectionConfiguration;
@@ -65,24 +40,12 @@ import org.jivesoftware.smackx.ping.PingFailedListener;
 import org.jivesoftware.smackx.ping.PingManager;
 import org.jivesoftware.smackx.receipts.DeliveryReceiptManager;
 import org.jivesoftware.smackx.receipts.ReceiptReceivedListener;
-import org.jivesoftware.smackx.xdata.Form;
-import org.jivesoftware.smackx.xdata.FormField;
-import org.jivesoftware.smackx.xdata.packet.DataForm;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
-import java.util.ListIterator;
-import java.util.Random;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 
 public class MyXMPP implements PingFailedListener {
@@ -162,10 +125,8 @@ public class MyXMPP implements PingFailedListener {
         connection = new XMPPTCPConnection(config.build());
         connectionListener = new XMPPConnectionListener();
         connection.addConnectionListener(connectionListener);
-        PingManager pingManager = PingManager.getInstanceFor(connection);
-        pingManager.registerPingFailedListener(this);
-        pingManager.setPingInterval(100);
-
+        PingManager.getInstanceFor(connection);
+        PingManager.getInstanceFor(connection).setPingInterval(600);
         mMessageListener = new MMessageListener();
         mChatManagerListener = new ChatManagerListenerImpl();
         ChatManager chatManager = ChatManager.getInstanceFor(connection);
@@ -174,11 +135,12 @@ public class MyXMPP implements PingFailedListener {
         manager = FileTransferManager.getInstanceFor(connection);
         manager.addFileTransferListener(new FileTransferIMPL());
 
-        ReconnectionManager reconnectionManager = ReconnectionManager.getInstanceFor(connection);
-        reconnectionManager.enableAutomaticReconnection();
-        reconnectionManager.setReconnectionPolicy(ReconnectionManager.ReconnectionPolicy.FIXED_DELAY);
-        reconnectionManager.setFixedDelay(100);
+        ReconnectionManager.getInstanceFor(connection);
+        ReconnectionManager.getInstanceFor(connection).enableAutomaticReconnection();
+        ReconnectionManager.setDefaultReconnectionPolicy(ReconnectionManager.ReconnectionPolicy.FIXED_DELAY);
+        ReconnectionManager.setDefaultFixedDelay(100);
         connection.addConnectionListener(new XMPPConnectionListener());
+
         StanzaListener stanzaListener = new StanzaListener() {
             @Override
             public void processPacket(Stanza packet) throws SmackException.NotConnectedException {
@@ -193,8 +155,8 @@ public class MyXMPP implements PingFailedListener {
                                 final boolean createdLocally) {
             chat.addMessageListener(mMessageListener);
             String groupName = String.valueOf(chat.getParticipant());
-            String name=MyXMPP.connection.getUser();
-            setInvitationListener(MyXMPP.connection.getUser().substring(0,name.length()-11));
+            String name = MyXMPP.connection.getUser();
+            setInvitationListener(MyXMPP.connection.getUser().substring(0, name.length() - 11));
 
         }
 
@@ -292,7 +254,7 @@ public class MyXMPP implements PingFailedListener {
             @Override
             protected void onPostExecute(Boolean aBoolean) {
                 super.onPostExecute(aBoolean);
-                ((MainActivity) context_main).startActivity();
+                ((Log_in) context_main).startActivity();
 
             }
         };

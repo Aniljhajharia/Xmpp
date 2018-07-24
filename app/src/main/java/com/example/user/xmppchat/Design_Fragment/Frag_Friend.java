@@ -9,13 +9,11 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.animation.Animation;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
@@ -24,11 +22,6 @@ import android.widget.TextView;
 
 import com.example.user.xmppchat.Active_users;
 import com.example.user.xmppchat.ChatActivity;
-import com.example.user.xmppchat.Friends;
-import com.example.user.xmppchat.Group_ChatActivity;
-import com.example.user.xmppchat.Group_activity;
-import com.example.user.xmppchat.Invitation;
-import com.example.user.xmppchat.MainActivity;
 import com.example.user.xmppchat.MyXMPP;
 import com.example.user.xmppchat.R;
 
@@ -85,7 +78,7 @@ public class Frag_Friend extends BaseFragment {
         scaleDownX.setDuration(1500);
         scaleDownY.setDuration(1500);
 
-        ObjectAnimator moveUpY = ObjectAnimator.ofFloat(imageView, "translationY", -100);
+        ObjectAnimator moveUpY = ObjectAnimator.ofFloat(imageView, "translationY", -50);
 
         moveUpY.setDuration(1500);
         moveUpY.setRepeatCount(ValueAnimator.INFINITE);
@@ -243,4 +236,5 @@ public class Frag_Friend extends BaseFragment {
             }
         });
     }
+
 }

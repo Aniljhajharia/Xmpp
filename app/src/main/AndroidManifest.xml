@@ -17,7 +17,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.AppCompat.Light.NoActionBar">
         <activity
-            android:name=".MainActivity"
+            android:name=".Log_in"
             android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -31,16 +31,15 @@
             android:enabled="true"
             android:exported="true" />
 
-        <activity android:name=".Friends" />
         <activity android:name=".ChatActivity" />
         <activity android:name=".Design_Fragment.Home_act" />
-        <activity android:name=".Group_activity" />
         <activity android:name=".Create_Group" />
         <activity android:name=".Group_ChatActivity" />
         <activity android:name=".Invitation" />
         <activity android:name=".Design_Fragment.Custom_Adapter" />
         <activity android:name=".Splash" />
-        <activity android:name=".Active_users"></activity>
+        <activity android:name=".Active_users" />
+        <activity android:name=".SIgn_up"></activity>
     </application>
 
 </manifest>

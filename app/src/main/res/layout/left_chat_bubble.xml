@@ -24,6 +24,17 @@
             android:layout_width="100dp"
             android:layout_height="100dp"
             android:maxWidth="100dp"
-            android:padding="5dp" />
+            />
+
+
+            <VideoView
+                android:id="@+id/video"
+                android:layout_width="100dp"
+                android:layout_height="100dp"
+                android:focusable="false"
+                />
+
+
+
     </LinearLayout>
 </RelativeLayout>

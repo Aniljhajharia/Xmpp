@@ -1,8 +1,13 @@
 package com.example.user.xmppchat.Design_Fragment;
 
 
+import android.content.ComponentName;
+import android.content.Context;
+import android.content.Intent;
+import android.content.ServiceConnection;
 import android.graphics.Color;
 import android.os.Build;
+import android.os.IBinder;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
@@ -11,10 +16,12 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Window;
 import android.view.WindowManager;
 
 import com.example.user.xmppchat.BaseActivity;
+import com.example.user.xmppchat.MyService;
 import com.example.user.xmppchat.R;
 
 import java.util.ArrayList;
@@ -24,6 +31,7 @@ import java.util.List;
 public class Home_act extends BaseActivity {
     ViewPager viewPager;
     TabLayout tabLayout;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

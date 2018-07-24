@@ -96,11 +96,11 @@ public class MyService extends Service {
         System.out.print("Am destroyed anil killed me");
     }
 
-    @Override
+   /* @Override
     public void onTaskRemoved(Intent rootIntent) {
         super.onTaskRemoved(rootIntent);
         MyXMPP.connection.disconnect();
         System.out.print("Am in onTaskRemoved and I would be killed");
 
-    }
+    }*/
 }

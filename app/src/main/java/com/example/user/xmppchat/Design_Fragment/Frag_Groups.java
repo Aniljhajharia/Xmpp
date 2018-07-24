@@ -20,11 +20,7 @@ import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Toast;
 
-import com.example.user.xmppchat.ChatBubble2;
-import com.example.user.xmppchat.Friends;
 import com.example.user.xmppchat.Group_ChatActivity;
-import com.example.user.xmppchat.Group_activity;
-import com.example.user.xmppchat.MainActivity;
 import com.example.user.xmppchat.MyXMPP;
 import com.example.user.xmppchat.R;
 
@@ -32,7 +28,6 @@ import org.jivesoftware.smack.MessageListener;
 import org.jivesoftware.smack.SmackException;
 import org.jivesoftware.smack.XMPPException;
 import org.jivesoftware.smack.packet.Message;
-import org.jivesoftware.smack.util.StringUtils;
 import org.jivesoftware.smackx.muc.MultiUserChat;
 import org.jivesoftware.smackx.muc.MultiUserChatManager;
 import org.jivesoftware.smackx.pubsub.AccessModel;
@@ -128,6 +123,7 @@ public class Frag_Groups extends BaseFragment {
                                            else
                                                myMessage=false;
                                             Group_ChatActivity.context.chatting_grp(message.getBody(), myMessage, message.getSubject());
+                                            //message.getFrom().substring(Group_ChatActivity.receiver.length()+1)+" : "+
                                         } catch (SmackException.NotConnectedException e) {
                                             e.printStackTrace();
                                         }
@@ -212,7 +208,8 @@ public class Frag_Groups extends BaseFragment {
 
                             try {
                                 muc.sendConfigurationForm(answerForm);
-                                muc.join("anil");
+                                String name=MyXMPP.connection.getUser();
+                                muc.join(MyXMPP.connection.getUser().substring(0,(name.length()-11)));
                             } catch (SmackException.NoResponseException e) {
                                 e.printStackTrace();
                             } catch (XMPPException.XMPPErrorException e) {

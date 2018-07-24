@@ -23,7 +23,7 @@
                                 <PersistentState>
                                   <option name="values">
                                     <map>
-                                      <entry key="url" value="jar:file:/home/user/Downloads/android-studio/plugins/android/lib/android.jar!/images/material_design_icons/action/ic_perm_contact_calendar_black_24dp.xml" />
+                                      <entry key="url" value="jar:file:/home/user/Downloads/android-studio/plugins/android/lib/android.jar!/images/material_design_icons/av/ic_slow_motion_video_black_24dp.xml" />
                                     </map>
                                   </option>
                                 </PersistentState>
@@ -35,8 +35,11 @@
                           <map>
                             <entry key="assetSourceType" value="FILE" />
                             <entry key="color" value="ff7f50" />
-                            <entry key="outputName" value="ic_user" />
-                            <entry key="sourceFile" value="$PROJECT_DIR$/../user (2).svg" />
+                            <entry key="height" value="512" />
+                            <entry key="outputName" value="ic_share" />
+                            <entry key="overrideSize" value="true" />
+                            <entry key="sourceFile" value="$PROJECT_DIR$/../share (3).svg" />
+                            <entry key="width" value="512" />
                           </map>
                         </option>
                       </PersistentState>

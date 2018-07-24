@@ -20,12 +20,6 @@
 
     </android.support.v7.widget.Toolbar>
 
-    <TextView
-        android:id="@+id/presence"
-        android:layout_width="match_parent"
-        android:layout_height="30dp"
-        android:background="#fff"
-        android:textColor="#fff" />
 
     <ListView
         android:id="@+id/chat_list"
@@ -69,6 +63,7 @@
                 android:background="@android:color/transparent"
                 android:hint="type msg..."
                 android:maxLines="4"
+                android:singleLine="true"
                 android:paddingBottom="10dp"
                 android:paddingLeft="8dp"
                 android:paddingTop="10dp" />
@@ -80,7 +75,8 @@
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="2dp"
                 android:layout_weight="0.2"
-                android:src="@drawable/ic_image_black_24dp" />
+                android:src="@drawable/ic_share" />
+
         </LinearLayout>
 
         <ImageView

@@ -2,10 +2,12 @@ package com.example.user.xmppchat;
 
 
 import android.app.Activity;
+import android.app.Dialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.provider.MediaStore;
 import android.support.v7.app.ActionBar;
@@ -18,13 +20,17 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.cloudinary.Cloudinary;
+import com.cloudinary.utils.ObjectUtils;
 import com.example.user.xmppchat.Design_Fragment.ChatBubble;
 import com.example.user.xmppchat.File_upload.ApiClient;
 import com.example.user.xmppchat.File_upload.ApiInterface;
@@ -33,8 +39,11 @@ import com.example.user.xmppchat.File_upload.ImageResponse;
 import org.jivesoftware.smack.SmackException;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import hani.momanii.supernova_emoji_library.Actions.EmojIconActions;
 import hani.momanii.supernova_emoji_library.Helper.EmojiconEditText;
@@ -48,8 +57,10 @@ import retrofit2.Retrofit;
 
 public class Group_ChatActivity extends AppCompatActivity {
     public static String presence, sender, receiver;
-    ListView msglist;
+    ListView msglist2;
     EditText msg;
+    Cloudinary cloudinary;
+    Map map2 = new HashMap();
     public static Group_ChatActivity context;
     public static ArrayList<String> arrayList_grp = new ArrayList<>();
     public static List<ChatBubble2> ChatBubbles2 = new ArrayList<>();
@@ -59,7 +70,6 @@ public class Group_ChatActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         setContentView(R.layout.activity_group__chat);
         adapter2 = new MessageAdapter2(this, R.layout.left_chat_bubble, ChatBubbles2);
         Toolbar toolbar = findViewById(R.id.tool_tool_grp);
@@ -69,6 +79,7 @@ public class Group_ChatActivity extends AppCompatActivity {
         ImageView imageView = findViewById(R.id.emoji_grp);
         View view = findViewById(R.id.root_grp);
         EmojIconActions emojIcon = new EmojIconActions(this, view, emojiconEditText, imageView);
+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             Window window = getWindow();
             window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
@@ -87,12 +98,40 @@ public class Group_ChatActivity extends AppCompatActivity {
         actionbar.setTitle(receiver);
 
         sender = pref.getString("sender", null);
-        msglist = findViewById(R.id.grp_chat_list);
+        msglist2 = findViewById(R.id.grp_chat_list);
         msg = findViewById(R.id.grp_messgae);
         context = this;
-        msglist.setTranscriptMode(ListView.TRANSCRIPT_MODE_ALWAYS_SCROLL);
-        msglist.setStackFromBottom(true);
-        msglist.setAdapter(adapter2);
+        msglist2.setTranscriptMode(ListView.TRANSCRIPT_MODE_ALWAYS_SCROLL);
+        msglist2.setStackFromBottom(true);
+        msglist2.setAdapter(adapter2);
+        msglist2.setLongClickable(true);
+        msglist2.setClickable(true);
+        msglist2.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+
+            @Override
+            public boolean onItemLongClick(AdapterView<?> parent, View view,
+                                           final int position, long id) {
+
+                final Dialog dialog = new Dialog(Group_ChatActivity.this);
+                dialog.setContentView(R.layout.dialog_delete);
+                dialog.setTitle("Custom Dialog");
+                dialog.show();
+                dialog.findViewById(R.id.delete).setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        ChatBubbles2.remove(position);
+
+                        adapter2.notifyDataSetChanged();
+
+                        Toast.makeText(Group_ChatActivity.this, "Item Deleted", Toast.LENGTH_LONG).show();
+                        dialog.dismiss();
+                    }
+                });
+
+                return true;
+            }
+
+        });
         findViewById(R.id.grp_end_btn).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -106,29 +145,39 @@ public class Group_ChatActivity extends AppCompatActivity {
         findViewById(R.id.send_btn_image_grp).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent galleryIntent = new Intent(Intent.ACTION_PICK,
-                        android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-                startActivityForResult(galleryIntent, 123);
+                final Dialog dialog = new Dialog(Group_ChatActivity.this);
+                dialog.setContentView(R.layout.dialog_choose);
+                dialog.setTitle("Custom Dialog");
+                dialog.show();
+                dialog.findViewById(R.id.image_dialog).setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        Intent galleryIntent = new Intent(Intent.ACTION_PICK,
+                                android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+                        startActivityForResult(galleryIntent, 123);
+                        dialog.dismiss();
+                    }
+                });
+                dialog.findViewById(R.id.video_dialog).setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        Intent galleryIntent = new Intent(Intent.ACTION_PICK,
+                                android.provider.MediaStore.Video.Media.EXTERNAL_CONTENT_URI);
+                        startActivityForResult(galleryIntent, 456);
+                        dialog.dismiss();
+                    }
+                });
 
             }
         });
-        findViewById(R.id.send_btn_image_grp).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent galleryIntent = new Intent(Intent.ACTION_PICK,
-                        android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-                startActivityForResult(galleryIntent, 123);
 
-
-            }
-        });
     }
 
     public void sendTextmsg_grp() throws SmackException.NotConnectedException {
         String message = msg.getText().toString();
         if (!message.equalsIgnoreCase("")) {
 
-            MyService.xmpp.sendMessage_grp(sender, receiver, message, this,"text");
+            MyService.xmpp.sendMessage_grp(sender, receiver, message, this, "text");
 
 
         }
@@ -162,8 +211,8 @@ public class Group_ChatActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    public void chatting_grp(String msg1, boolean myMessage,String tag) throws SmackException.NotConnectedException {
-        ChatBubble2 chatBubble2 = new ChatBubble2(msg1, myMessage,tag);
+    public void chatting_grp(String msg1, boolean myMessage, String tag) throws SmackException.NotConnectedException {
+        ChatBubble2 chatBubble2 = new ChatBubble2(msg1, myMessage, tag);
         ChatBubbles2.add(chatBubble2);
         adapter2.notifyDataSetChanged();
         msg.setText("");
@@ -173,6 +222,7 @@ public class Group_ChatActivity extends AppCompatActivity {
     public boolean ismyMessage(boolean myMessage) {
         return myMessage;
     }
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -196,8 +246,6 @@ public class Group_ChatActivity extends AppCompatActivity {
             MultipartBody.Part body = MultipartBody.Part.createFormData("upload", file.getName(), reqFile);
             RequestBody name = RequestBody.create(MediaType.parse("text/plain"), "upload_test");
 
-
-            // retrofit2.Call<okhttp3.ResponseBody> req =apiInterface.postImage(body, name);
             ApiClient apiClient = new ApiClient();
             Retrofit retrofit = apiClient.getClient();
             ApiInterface api = retrofit.create(ApiInterface.class);
@@ -213,10 +261,7 @@ public class Group_ChatActivity extends AppCompatActivity {
                     Log.d("Tag", "" + response.body());
                     ImageResponse data = new ImageResponse();
                     String message = response.body().data.link;
-                    myMessage = true;
-                    ChatBubble chatBubble = new ChatBubble(message, myMessage, "image");
-                    MainActivity.ChatBubbles.add(chatBubble);
-                    MainActivity.adapter.notifyDataSetChanged();
+
                     msg.setText("");
                     try {
                         MyService.xmpp.sendMessage_grp(sender, receiver, message, Group_ChatActivity.this, "image");
@@ -230,7 +275,62 @@ public class Group_ChatActivity extends AppCompatActivity {
                     t.printStackTrace();
                 }
             });
+        } else if (requestCode == 456 && resultCode == Activity.RESULT_OK) {
+            Uri selectedImage = data.getData();
+            String[] filePathColumn = {MediaStore.Video.Media.DATA};
+            Cursor cursor = getContentResolver().query(selectedImage, filePathColumn, null, null, null);
+            if (cursor == null)
+                return;
+
+            cursor.moveToFirst();
+
+            int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
+            String filePath = cursor.getString(columnIndex);
+            cursor.close();
+
+            File file = new File(filePath);
+            sendVideo(file, filePath);
+
         }
+    }
+
+    public void sendVideo(final File file, final String filepath) {
+        AsyncTask<Void, Void, Map> connectionThread = new AsyncTask<Void, Void, Map>() {
+            Map config;
+
+            @Override
+            protected Map doInBackground(Void... voids) {
+                try {
+
+                    config = new HashMap();
+                    config.put("cloud_name", "dqo56rw2t");
+                    config.put("api_key", "494861765915649");
+                    config.put("api_secret", "s5YVxxT96b_6zyJ_nOIRJkftFGk");
+                    cloudinary = new Cloudinary(config);
+                    map2 = cloudinary.uploader().upload(file,
+                            ObjectUtils.asMap("resource_type", "video"));
+
+
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                return config;
+            }
+
+            @Override
+            protected void onPostExecute(Map map) {
+                super.onPostExecute(map);
+                Log.d("Url", map2.get("url").toString());
+                myMessage = true;
+                msg.setText("");
+                try {
+                    MyService.xmpp.sendMessage_grp(sender, receiver, map2.get("url").toString(), Group_ChatActivity.this, "video");
+                } catch (SmackException.NotConnectedException e) {
+                    e.printStackTrace();
+                }
+            }
+        };
+        connectionThread.execute();
     }
 }
 

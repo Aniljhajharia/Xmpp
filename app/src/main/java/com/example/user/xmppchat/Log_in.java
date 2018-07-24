@@ -5,7 +5,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.SharedPreferences;
-import android.graphics.Color;
 import android.os.Build;
 import android.os.IBinder;
 import android.os.Bundle;
@@ -26,11 +25,7 @@ import com.example.user.xmppchat.Design_Fragment.MessageAdapter;
 import java.util.ArrayList;
 import java.util.List;
 
-import hani.momanii.supernova_emoji_library.Actions.EmojIconActions;
-
-import static com.example.user.xmppchat.R.layout.fragment_chat;
-
-public class MainActivity extends BaseActivity implements View.OnClickListener {
+public class Log_in extends BaseActivity implements View.OnClickListener {
     private MyService mService;
     EditText username;
     EditText password;
@@ -71,6 +66,13 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
         }
         findViewById(R.id.login).setOnClickListener(this);
         doBindService();
+        findViewById(R.id.new_account).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+               Intent intent=new Intent(Log_in.this,SIgn_up.class);
+               startActivity(intent);
+            }
+        });
     }
 
     @Override
@@ -96,6 +98,15 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
     void doBindService() {
         bindService(new Intent(this, MyService.class), mConnection,
                 Context.BIND_AUTO_CREATE);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if(mService==null)
+        {
+            doBindService();
+        }
     }
 
     public void startActivity() {

@@ -10,7 +10,7 @@ public class ChatBubble {
         this.tag=tag;
     }
 
-    public String getContent() {
+    public  String getContent() {
         return content;
     }
 
