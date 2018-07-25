@@ -3,12 +3,16 @@ package com.example.user.xmppchat;
 
 import android.app.Activity;
 import android.app.Dialog;
+import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
+import android.os.IBinder;
 import android.provider.MediaStore;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
@@ -56,6 +60,7 @@ import retrofit2.Response;
 import retrofit2.Retrofit;
 
 public class Group_ChatActivity extends AppCompatActivity {
+    private MyService mService;
     public static String presence, sender, receiver;
     ListView msglist2;
     EditText msg;
@@ -66,11 +71,24 @@ public class Group_ChatActivity extends AppCompatActivity {
     public static List<ChatBubble2> ChatBubbles2 = new ArrayList<>();
     public static ArrayAdapter<ChatBubble2> adapter2;
     boolean myMessage;
+    private final ServiceConnection mConnection = new ServiceConnection() {
+        @Override
+        public void onServiceConnected(final ComponentName name, final IBinder service) {
+            mService = ((MyService.LocalBinder<MyService>) service).getService();
+            Log.d("TAG", "onServiceConnected");
+        }
 
+        @Override
+        public void onServiceDisconnected(final ComponentName name) {
+            mService = null;
+            Log.d("TAG", "onServiceDisconnected");
+        }
+    };
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_group__chat);
+        doBindService();
         adapter2 = new MessageAdapter2(this, R.layout.left_chat_bubble, ChatBubbles2);
         Toolbar toolbar = findViewById(R.id.tool_tool_grp);
         setSupportActionBar(toolbar);
@@ -331,6 +349,10 @@ public class Group_ChatActivity extends AppCompatActivity {
             }
         };
         connectionThread.execute();
+    }
+    void doBindService() {
+        bindService(new Intent(this, MyService.class),mConnection ,
+                Context.BIND_AUTO_CREATE);
     }
 }
 

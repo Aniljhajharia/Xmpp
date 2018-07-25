@@ -71,6 +71,7 @@ public class Log_in extends BaseActivity implements View.OnClickListener {
             public void onClick(View v) {
                Intent intent=new Intent(Log_in.this,SIgn_up.class);
                startActivity(intent);
+               finish();
             }
         });
     }
@@ -113,6 +114,7 @@ public class Log_in extends BaseActivity implements View.OnClickListener {
         if (xmpp.getConnection().isAuthenticated()) {
             Intent intent = new Intent(this, Home_act.class);
             startActivity(intent);
+           // finish();
         } else {
             displayToast("Please enter correct username and password");
         }
@@ -128,7 +130,8 @@ public class Log_in extends BaseActivity implements View.OnClickListener {
     protected void onDestroy() {
         super.onDestroy();
         try {
-            MyXMPP.connection.disconnect();
+           MyXMPP.connection.disconnect();
+           unbindService(mConnection);
         } catch (Exception e) {
 
         }

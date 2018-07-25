@@ -11,6 +11,7 @@ import android.widget.Toast;
 
 import com.google.gson.Gson;
 
+import org.jivesoftware.smack.AbstractXMPPConnection;
 import org.jivesoftware.smack.ConnectionConfiguration;
 import org.jivesoftware.smack.ConnectionListener;
 import org.jivesoftware.smack.ReconnectionManager;
@@ -48,7 +49,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 
 
-public class MyXMPP implements PingFailedListener {
+public class MyXMPP  implements PingFailedListener{
     private static Context context_main2;
     private String serverAddress;
     private static byte[] dataReceived;
@@ -60,7 +61,7 @@ public class MyXMPP implements PingFailedListener {
     public static String loginUser;
     public static String passwordUser;
     Context context_chat, context_grp;
-    public static XMPPTCPConnection connection;
+    public static AbstractXMPPConnection connection;
     XMPPConnectionListener connectionListener;
     MyService context;
     String sender;
@@ -70,6 +71,7 @@ public class MyXMPP implements PingFailedListener {
     boolean tag;
     ChatActivity chatActivity = new ChatActivity();
     public static MyXMPP instance = null;
+    XMPPTCPConnectionConfiguration.Builder config;
     public static boolean instanceCreated = false;
 
     public MyXMPP(MyService context, String serverAdress, String logiUser,
@@ -85,16 +87,16 @@ public class MyXMPP implements PingFailedListener {
 
     }
 
-    public XMPPTCPConnection getConnection() {
+    public AbstractXMPPConnection getConnection() {
         return connection;
     }
 
     public static MyXMPP getInstance(MyService context, String server,
                                      String user, String pass, Context context11) {
-        // if (instance == null) {
+
         instance = new MyXMPP(context, server, user, pass);
         instanceCreated = true;
-        // }
+
         return instance;
     }
 
@@ -106,15 +108,11 @@ public class MyXMPP implements PingFailedListener {
     private FileTransferManager manager;
 
     public void init() {
-        gson = new Gson();
         initialiseConnection();
-
-
     }
 
     private void initialiseConnection() {
-
-        XMPPTCPConnectionConfiguration.Builder config = XMPPTCPConnectionConfiguration
+       /* XMPPTCPConnectionConfiguration.Builder config = XMPPTCPConnectionConfiguration
                 .builder();
         config.setSecurityMode(ConnectionConfiguration.SecurityMode.disabled);
         config.setServiceName("192.168.1.114");
@@ -124,9 +122,20 @@ public class MyXMPP implements PingFailedListener {
         XMPPTCPConnection.setUseStreamManagementDefault(true);
         connection = new XMPPTCPConnection(config.build());
         connectionListener = new XMPPConnectionListener();
-        connection.addConnectionListener(connectionListener);
-        PingManager.getInstanceFor(connection);
-        PingManager.getInstanceFor(connection).setPingInterval(600);
+//        connection.addConnectionListener(connectionListener);
+        connection.addConnectionListener(new XMPPConnectionListener());
+        try {
+            PingManager pingManager = PingManager.getInstanceFor(connection);
+            pingManager.setPingInterval(3);
+            pingManager.pingMyServer();
+            pingManager.registerPingFailedListener(new PingFailedListener() {
+                @Override
+                public void pingFailed() {
+                    Log.d("Ping", "PingFailed");
+                }
+            });
+        } catch (Exception e) {
+        }
         mMessageListener = new MMessageListener();
         mChatManagerListener = new ChatManagerListenerImpl();
         ChatManager chatManager = ChatManager.getInstanceFor(connection);
@@ -135,18 +144,62 @@ public class MyXMPP implements PingFailedListener {
         manager = FileTransferManager.getInstanceFor(connection);
         manager.addFileTransferListener(new FileTransferIMPL());
 
-        ReconnectionManager.getInstanceFor(connection);
-        ReconnectionManager.getInstanceFor(connection).enableAutomaticReconnection();
-        ReconnectionManager.setDefaultReconnectionPolicy(ReconnectionManager.ReconnectionPolicy.FIXED_DELAY);
-        ReconnectionManager.setDefaultFixedDelay(100);
-        connection.addConnectionListener(new XMPPConnectionListener());
+        ReconnectionManager reconnectionManager = ReconnectionManager.getInstanceFor(connection);
+        reconnectionManager.setEnabledPerDefault(true);
+        reconnectionManager.enableAutomaticReconnection();
+
 
         StanzaListener stanzaListener = new StanzaListener() {
             @Override
             public void processPacket(Stanza packet) throws SmackException.NotConnectedException {
                 Log.d("groupmessage", packet + "");
             }
+        };*/
+        config = XMPPTCPConnectionConfiguration.builder();
+        config.setSecurityMode(ConnectionConfiguration.SecurityMode.disabled);
+        config.setServiceName("192.168.1.114");
+        config.setHost("192.168.1.114");
+        config.setPort(5222);
+        config.setDebuggerEnabled(true);
+        XMPPTCPConnection.setUseStreamManagementDefault(true);
+        connection = new XMPPTCPConnection(config.build());
+        connection.addConnectionListener(new XMPPConnectionListener());
+
+        try {
+            PingManager pingManager = PingManager.getInstanceFor(connection);
+            pingManager.setPingInterval(3);
+            pingManager.pingMyServer();
+            pingManager.registerPingFailedListener(new PingFailedListener() {
+                @Override
+                public void pingFailed() {
+                    Log.d("Ping", "PingFailed");
+                }
+            });
+        } catch (Exception e) {
+        }
+
+        ReconnectionManager reconnectionManager = ReconnectionManager.getInstanceFor(connection);
+        reconnectionManager.setEnabledPerDefault(true);
+        reconnectionManager.enableAutomaticReconnection();
+
+        mMessageListener = new MMessageListener();
+        mChatManagerListener = new ChatManagerListenerImpl();
+        ChatManager chatManager = ChatManager.getInstanceFor(connection);
+        chatManager.addChatListener(mChatManagerListener);
+
+        manager = FileTransferManager.getInstanceFor(connection);
+        manager.addFileTransferListener(new FileTransferIMPL());
+        StanzaListener stanzaListener = new StanzaListener() {
+            @Override
+            public void processPacket(Stanza packet) throws SmackException.NotConnectedException {
+                Log.d("groupmessage", packet + "");
+            }
         };
+    }
+
+    @Override
+    public void pingFailed() {
+        Log.d("Ping","failed");
     }
 
     private class ChatManagerListenerImpl implements ChatManagerListener {
@@ -157,7 +210,6 @@ public class MyXMPP implements PingFailedListener {
             String groupName = String.valueOf(chat.getParticipant());
             String name = MyXMPP.connection.getUser();
             setInvitationListener(MyXMPP.connection.getUser().substring(0, name.length() - 11));
-
         }
 
     }
@@ -317,24 +369,20 @@ public class MyXMPP implements PingFailedListener {
 
     }
 
-    public void disconnect2() {
-        connection.disconnect();
-    }
-
-    @Override
-    public void pingFailed() {
-
-    }
 
 
-    public class XMPPConnectionListener implements ConnectionListener {
+
+
+    public static class XMPPConnectionListener implements ConnectionListener {
         @Override
         public void connected(XMPPConnection connection) {
+            Log.d("connected", "successful");
 
         }
 
         @Override
         public void authenticated(XMPPConnection connection, boolean resumed) {
+            Log.d("authenticated", "successful");
 
         }
 
@@ -367,89 +415,13 @@ public class MyXMPP implements PingFailedListener {
 
     }
 
-    public void fileTransfer(String user, Bitmap bitmap, String filename) throws XMPPException {
-        Roster roster = Roster.getInstanceFor(connection);
-        String destination = roster.getPresence(user).getFrom();
 
-        FileTransferManager manager = FileTransferManager.getInstanceFor(connection);
-
-        final OutgoingFileTransfer transfer = manager.createOutgoingFileTransfer(destination);
-        transfer.sendStream(new ByteArrayInputStream(convertFileToByte(bitmap)), filename, convertFileToByte(bitmap).length, "Sent");
-
-        System.out.println("Status :: " + transfer.getStatus() + " Error :: " + transfer.getError() + " Exception :: " + transfer.getException());
-        System.out.println("Is it done? " + transfer.isDone());
-        if (transfer.getStatus().equals(FileTransfer.Status.refused))
-            System.out.println("refused  " + transfer.getError());
-        else if (transfer.getStatus().equals(FileTransfer.Status.error))
-            System.out.println(" error " + transfer.getError());
-        else if (transfer.getStatus().equals(FileTransfer.Status.cancelled))
-            System.out.println(" cancelled  " + transfer.getError());
-        else
-            System.out.println("Success");
-    }
-
-    public byte[] convertFileToByte(Bitmap bmp) {
-        ByteArrayOutputStream stream = new ByteArrayOutputStream();
-        bmp.compress(Bitmap.CompressFormat.PNG, 100, stream);
-        return stream.toByteArray();
-    }
-
-
-    /*  public class FileTransferIMPL implements FileTransferListener {
-
-          @Override
-          public void fileTransferRequest(final FileTransferRequest request) {
-              final IncomingFileTransfer transfer = request.accept();
-              try {
-                  InputStream is = transfer.recieveFile();
-                  ByteArrayOutputStream os = new ByteArrayOutputStream();
-                  int nRead;
-                  byte[] buf = new byte[1024];
-                  try {
-                      while ((nRead = is.read(buf, 0, buf.length)) != -1) {
-                          os.write(buf, 0, nRead);
-                      }
-                      os.flush();
-                  } catch (IOException e) {
-                      e.printStackTrace();
-                  }
-                  dataReceived = os.toByteArray();
-                  createDirectoryAndSaveFile(dataReceived, request.getFileName());
-                  Log.i("File Received", transfer.getFileName());
-                  processMessage(request);
-              } catch (XMPPException ex) {
-                  Logger.getLogger(MyXMPP.class.getName()).log(Level.SEVERE, null, ex);
-              } catch (SmackException e) {
-                  e.printStackTrace();
-              }
-          }
-      }*/
     public class FileTransferIMPL implements FileTransferListener {
 
         @Override
         public void fileTransferRequest(FileTransferRequest request) {
             final IncomingFileTransfer transfer = request.accept();
 
-        }
-    }
-
-    private void createDirectoryAndSaveFile(byte[] imageToSave, String fileName) {
-        File direct = new File(Environment.getExternalStorageDirectory() + "/LocShopie/Received/");
-        if (!direct.exists()) {
-            File wallpaperDirectory = new File("/sdcard/LocShopie/Received/");
-            wallpaperDirectory.mkdirs();
-        }
-        File file = new File(new File("/sdcard/LocShopie/Received/"), fileName);
-        if (file.exists()) {
-            file.delete();
-        }
-        try {
-            FileOutputStream out = new FileOutputStream(file);
-            out.write(imageToSave);
-            out.flush();
-            out.close();
-        } catch (Exception e) {
-            e.printStackTrace();
         }
     }
 

@@ -32,7 +32,9 @@ dependencies {
     implementation 'com.squareup.retrofit2:retrofit:2.4.0'
     implementation 'com.squareup.retrofit2:converter-gson:2.3.0'
     implementation 'com.github.bumptech.glide:glide:4.7.1'
+    implementation 'com.github.marcinmoskala:VideoPlayView:0.0.2'
     implementation group: 'com.cloudinary', name: 'cloudinary-android', version: '1.24.0'
+    implementation 'net.alexandroid.utils:exoplayerhelper:2.15'
     implementation 'com.github.hani-momanii:SuperNova-Emoji:1.1'
     testImplementation 'junit:junit:4.12'
 

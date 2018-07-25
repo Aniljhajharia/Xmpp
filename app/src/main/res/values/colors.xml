@@ -2,7 +2,7 @@
 <resources>
     <color name="colorPrimary">#3F51B5</color>
     <color name="colorPrimaryDark">#ffae19</color>
-    <color name="colorAccent">#FF4081</color>
+    <color name="colorAccent">#FF7F50</color>
     <color name="colorbar">#CF7100</color>
     <color name="color_App">#FF7F50</color>
     <color name="background_material_light">#ffa500</color>

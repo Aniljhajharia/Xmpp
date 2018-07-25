@@ -80,7 +80,19 @@ public class ChatActivity extends AppCompatActivity {
     String auth = "Client-ID a2181c246a3c5d0";
     String auth2 = "client_secret: c4cdb9d293cee07b0a23c790fe259a9de924d763";
     private MyService mService;
+    private final ServiceConnection mConnection = new ServiceConnection() {
+        @Override
+        public void onServiceConnected(final ComponentName name, final IBinder service) {
+            mService = ((MyService.LocalBinder<MyService>) service).getService();
+            Log.d("TAG", "onServiceConnected");
+        }
 
+        @Override
+        public void onServiceDisconnected(final ComponentName name) {
+            mService = null;
+            Log.d("TAG", "onServiceDisconnected");
+        }
+    };
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -88,7 +100,7 @@ public class ChatActivity extends AppCompatActivity {
         setContentView(R.layout.activity_chat);
         Toolbar toolbar = findViewById(R.id.tool_tool);
         setSupportActionBar(toolbar);
-
+        doBindService();
         toolbar.setTitle(receiver);
         emojiconEditText = findViewById(R.id.messgae_act);
         imageView = findViewById(R.id.emoji_button);
@@ -316,6 +328,11 @@ public class ChatActivity extends AppCompatActivity {
 
         }
     }
+    @Override
+    protected void onResume() {
+        super.onResume();
+        MyXMPP.connection.addConnectionListener(new MyXMPP.XMPPConnectionListener());
+    }
 
     public static ChatActivity getInstance() {
 
@@ -373,9 +390,9 @@ public class ChatActivity extends AppCompatActivity {
 
         PrivacyItem item = new PrivacyItem(PrivacyItem.Type.jid, userName + "/Smack", false, 1);
         privacyItems.add(item);
-        item = new PrivacyItem(PrivacyItem.Type.subscription, userName + "Smack", false, 1);
+        item = new PrivacyItem(PrivacyItem.Type.subscription, userName + "/Smack", false, 1);
         privacyItems.add(item);
-        item = new PrivacyItem(PrivacyItem.Type.group, userName + "Smack", false, 1);
+        item = new PrivacyItem(PrivacyItem.Type.group, userName + "/Smack", false, 1);
         privacyItems.add(item);
 
         try {
@@ -386,7 +403,13 @@ public class ChatActivity extends AppCompatActivity {
             e.printStackTrace();
         } catch (SmackException.NotConnectedException e) {
             e.printStackTrace();
+        }catch (Exception e){
+            e.printStackTrace();
         }
+    }
+    void doBindService() {
+        bindService(new Intent(this, MyService.class),mConnection ,
+                Context.BIND_AUTO_CREATE);
     }
 
 }

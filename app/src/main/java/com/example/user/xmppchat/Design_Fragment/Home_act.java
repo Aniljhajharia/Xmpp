@@ -16,12 +16,16 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.os.Bundle;
+import android.support.v7.app.ActionBar;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.TextView;
 
 import com.example.user.xmppchat.BaseActivity;
 import com.example.user.xmppchat.MyService;
+import com.example.user.xmppchat.MyXMPP;
 import com.example.user.xmppchat.R;
 
 import java.util.ArrayList;
@@ -29,14 +33,36 @@ import java.util.List;
 
 
 public class Home_act extends BaseActivity {
+    private MyService mService;
     ViewPager viewPager;
     TabLayout tabLayout;
+    TextView textView;
+    private final ServiceConnection mConnection = new ServiceConnection() {
+        @Override
+        public void onServiceConnected(final ComponentName name, final IBinder service) {
+            mService = ((MyService.LocalBinder<MyService>) service).getService();
+            Log.d("TAG", "onServiceConnected");
+        }
 
+        @Override
+        public void onServiceDisconnected(final ComponentName name) {
+            mService = null;
+            Log.d("TAG", "onServiceDisconnected");
+        }
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home_act);
+        Toolbar toolbar = findViewById(R.id.tool_home);
+        textView = findViewById(R.id.logged);
+        setSupportActionBar(toolbar);
+        ActionBar actionbar = getSupportActionBar();
+        String name = MyXMPP.connection.getUser();
+        doBindService();
+        // actionbar.setTitle(MyXMPP.connection.getUser().substring(0,name.length()-11));
+        textView.setText(MyXMPP.connection.getUser().substring(0, name.length() - 11));
         viewPager = (ViewPager) findViewById(R.id.container);
         addTabs(viewPager);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
@@ -88,5 +114,29 @@ public class Home_act extends BaseActivity {
         public CharSequence getPageTitle(int position) {
             return mFragmentTitleList.get(position);
         }
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        MyXMPP.connection.addConnectionListener(new MyXMPP.XMPPConnectionListener());
+    }
+
+    void doBindService() {
+        bindService(new Intent(this, MyService.class),mConnection ,
+                Context.BIND_AUTO_CREATE);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        try {
+            MyXMPP.connection.disconnect();
+            unbindService(mConnection);
+        } catch (Exception e) {
+
+        }
+
+        System.out.println("Activity destroyed");
     }
 }
