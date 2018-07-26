@@ -20,9 +20,10 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import com.example.user.xmppchat.Active_users;
-import com.example.user.xmppchat.ChatActivity;
-import com.example.user.xmppchat.MyXMPP;
+import com.example.user.xmppchat.Activities.Active_users;
+import com.example.user.xmppchat.Activities.ChatActivity;
+import com.example.user.xmppchat.Service_And_Connections.MyService;
+import com.example.user.xmppchat.Service_And_Connections.MyXMPP;
 import com.example.user.xmppchat.R;
 
 import org.jivesoftware.smack.ReconnectionManager;
@@ -54,6 +55,7 @@ public class Frag_Friend extends BaseFragment {
     ArrayList<String> arrayList = new ArrayList<>();
     ArrayList<String> arrayList2 = new ArrayList<>();
     ArrayList<String> arrayList3 = new ArrayList<>();
+    int c = 0;
 
     public Frag_Friend() {
         // Required empty public constructor
@@ -63,15 +65,15 @@ public class Frag_Friend extends BaseFragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
         View v = inflater.inflate(R.layout.fragment_frag__friend, container, false);
+
         listView = v.findViewById(R.id.friends_list_frag);
-        imageView=v.findViewById(R.id.active_frag);
-        //listView2 = v.findViewById(R.id.active_usres);
+        imageView = v.findViewById(R.id.active_frag);
         SharedPreferences pref = getActivity().getApplicationContext().getSharedPreferences("Login", 0);
         user = pref.getString("sender", null);
         xmpp = new MyXMPP();
         new GetUser().execute();
+        getActiveuser();
 
         ObjectAnimator scaleDownX = ObjectAnimator.ofFloat(imageView, "scaleX", 0.9f);
         ObjectAnimator scaleDownY = ObjectAnimator.ofFloat(imageView, "scaleY", 0.9f);
@@ -91,6 +93,10 @@ public class Frag_Friend extends BaseFragment {
 
         scaleDown.start();
         moveUp.start();
+
+        /**
+         * getting list of active users
+         */
         v.findViewById(R.id.active_frag).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -101,8 +107,9 @@ public class Frag_Friend extends BaseFragment {
         return v;
     }
 
-
-
+    /**
+     * Async task for getting user rosters in background thread and set adapter in post execute
+     */
     class GetUser extends AsyncTask<Void, Void, String> {
         private ProgressDialog pd;
 
@@ -132,6 +139,13 @@ public class Frag_Friend extends BaseFragment {
         }
     }
 
+    /**
+     * used for getting thee roster list of user and add in the array list to show
+     * @throws SmackException.NotLoggedInException
+     * @throws XMPPException.XMPPErrorException
+     * @throws SmackException.NotConnectedException
+     * @throws SmackException.NoResponseException
+     */
     public void getRegisteredUser() throws SmackException.NotLoggedInException, XMPPException.XMPPErrorException, SmackException.NotConnectedException, SmackException.NoResponseException {
         UserSearchManager manager = new UserSearchManager(xmpp.getConnection());
         try {
@@ -204,6 +218,10 @@ public class Frag_Friend extends BaseFragment {
             public void entriesUpdated(Collection<String> addresses) {
             }
 
+            /**
+             * method calls when user presence changes
+             * @param presence
+             */
             public void presenceChanged(Presence presence) {
                 pre = presence.getStatus();
                 ReconnectionManager reconnectionManager = ReconnectionManager.getInstanceFor(MyXMPP.connection);
@@ -213,6 +231,9 @@ public class Frag_Friend extends BaseFragment {
                 System.out.println("Presence changed: " + presence.getFrom() + " " + presence);
             }
         });
+        /**
+         * on clicking of roster start chat Activity
+         */
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -224,6 +245,9 @@ public class Frag_Friend extends BaseFragment {
                 startActivity(intent);
             }
         });
+        /**
+         * start chatting with active users
+         */
         listView2.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -235,6 +259,33 @@ public class Frag_Friend extends BaseFragment {
                 startActivity(intent);
             }
         });
+    }
+
+    /**
+     * used to get active user list from roster list of user
+     */
+    public void getActiveuser() {
+        final Roster roster = Roster.getInstanceFor(MyXMPP.connection);
+        Collection<RosterEntry> entries = roster.getEntries();
+        arrayList.clear();
+        for (RosterEntry entry : entries) {
+            if ((roster.getPresence(entry.getUser()).getStatus()) != null) {
+                if ((roster.getPresence(entry.getUser()).getStatus()).equals("Online")) {
+                    arrayList.add(entry.getUser());
+                    c++;
+                }
+
+            }
+
+        }
+
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+
+        Log.d("Destroyed","Frag_frnd");
     }
 
 }

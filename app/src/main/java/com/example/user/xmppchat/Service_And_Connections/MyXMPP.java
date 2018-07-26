@@ -1,14 +1,14 @@
-package com.example.user.xmppchat;
+package com.example.user.xmppchat.Service_And_Connections;
 
 import android.content.Context;
-import android.graphics.Bitmap;
 import android.os.AsyncTask;
-import android.os.Environment;
 import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.example.user.xmppchat.Activities.ChatActivity;
+import com.example.user.xmppchat.Activities.Log_in;
 import com.google.gson.Gson;
 
 import org.jivesoftware.smack.AbstractXMPPConnection;
@@ -19,18 +19,15 @@ import org.jivesoftware.smack.SmackException;
 import org.jivesoftware.smack.StanzaListener;
 import org.jivesoftware.smack.XMPPConnection;
 import org.jivesoftware.smack.XMPPException;
-import org.jivesoftware.smackx.filetransfer.FileTransfer;
 import org.jivesoftware.smackx.filetransfer.FileTransferListener;
 import org.jivesoftware.smackx.filetransfer.FileTransferManager;
 import org.jivesoftware.smackx.filetransfer.FileTransferRequest;
 import org.jivesoftware.smackx.filetransfer.IncomingFileTransfer;
-import org.jivesoftware.smackx.filetransfer.OutgoingFileTransfer;
 import org.jivesoftware.smack.chat.ChatManager;
 import org.jivesoftware.smack.chat.ChatManagerListener;
 import org.jivesoftware.smack.chat.ChatMessageListener;
 import org.jivesoftware.smack.packet.Message;;
 import org.jivesoftware.smack.packet.Stanza;
-import org.jivesoftware.smack.roster.Roster;
 import org.jivesoftware.smack.sasl.SASLErrorException;
 import org.jivesoftware.smack.tcp.XMPPTCPConnection;
 import org.jivesoftware.smack.tcp.XMPPTCPConnectionConfiguration;
@@ -42,14 +39,10 @@ import org.jivesoftware.smackx.ping.PingManager;
 import org.jivesoftware.smackx.receipts.DeliveryReceiptManager;
 import org.jivesoftware.smackx.receipts.ReceiptReceivedListener;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 
 
-public class MyXMPP  implements PingFailedListener{
+public class MyXMPP implements PingFailedListener {
     private static Context context_main2;
     private String serverAddress;
     private static byte[] dataReceived;
@@ -199,7 +192,7 @@ public class MyXMPP  implements PingFailedListener{
 
     @Override
     public void pingFailed() {
-        Log.d("Ping","failed");
+        Log.d("Ping", "failed");
     }
 
     private class ChatManagerListenerImpl implements ChatManagerListener {
@@ -245,7 +238,7 @@ public class MyXMPP  implements PingFailedListener{
                 public void run() {
                     if (message.getType() == Message.Type.chat
                             && message.getBody() != null) {
-                        Toast.makeText(context, "message -" + "" + message.getBody(), Toast.LENGTH_LONG).show();
+//                        Toast.makeText(context, "message -" + "" + message.getBody(), Toast.LENGTH_LONG).show();
 
                         if (connection.getUser() != null)
                             chatActivity.chatting(message.getBody(), message.getSubject());
@@ -368,10 +361,6 @@ public class MyXMPP  implements PingFailedListener{
 
 
     }
-
-
-
-
 
     public static class XMPPConnectionListener implements ConnectionListener {
         @Override

@@ -1,12 +1,16 @@
-package com.example.user.xmppchat;
+package com.example.user.xmppchat.Activities;
 
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
+
+import com.example.user.xmppchat.R;
+import com.example.user.xmppchat.Registered;
 
 import org.jivesoftware.smack.ConnectionConfiguration;
 import org.jivesoftware.smack.SmackException;
@@ -16,44 +20,48 @@ import org.jivesoftware.smack.tcp.XMPPTCPConnectionConfiguration;
 import org.jivesoftware.smackx.iqregister.AccountManager;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.Map;
 
 public class SIgn_up extends AppCompatActivity {
-EditText editText1,editText2;
-XMPPTCPConnection connection;
-    String u,p;
+    EditText editText1, editText2;
+    XMPPTCPConnection connection;
+    String u, p;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sign_up);
-        editText1=findViewById(R.id.user);
-        editText2=findViewById(R.id.password_sign);
-        u=editText1.getText().toString();
-         p=editText2.getText().toString();
+        editText1 = findViewById(R.id.user);
+        editText2 = findViewById(R.id.password_sign);
         findViewById(R.id.sign).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-              register();
+                u = editText1.getText().toString();
+                p = editText2.getText().toString();
+                register();
 
             }
         });
         findViewById(R.id.log).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent=new Intent(SIgn_up.this,Log_in.class);
+                Intent intent = new Intent(SIgn_up.this, Log_in.class);
                 startActivity(intent);
             }
         });
     }
+
     public void register() {
         AsyncTask<Void, Void, Map> connectionThread = new AsyncTask<Void, Void, Map>() {
             Map config;
+
             @Override
             protected Map doInBackground(Void... voids) {
                 XMPPTCPConnectionConfiguration.Builder confg = XMPPTCPConnectionConfiguration
                         .builder();
                 confg.setSecurityMode(ConnectionConfiguration.SecurityMode.disabled);
-                confg.setServiceName("192.168.1.114");
+                confg.setServiceName("test");
                 confg.setHost("192.168.1.114");
                 confg.setPort(5222);
                 confg.setDebuggerEnabled(true);
@@ -89,7 +97,17 @@ XMPPTCPConnection connection;
             @Override
             protected void onPostExecute(Map map) {
                 super.onPostExecute(map);
-                Toast.makeText(SIgn_up.this,"registered",Toast.LENGTH_LONG).show();
+                if (TextUtils.isEmpty(editText1.getText())) {
+                    editText1.setError("Username is required!");
+
+                }
+                if (TextUtils.isEmpty(editText2.getText())) {
+                    editText2.setError("Password is required!");
+
+                } else {
+                    Intent i = new Intent(SIgn_up.this, Registered.class);
+                    startActivity(i);
+                }
 
             }
         };

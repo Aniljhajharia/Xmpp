@@ -17,7 +17,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.AppCompat.Light.NoActionBar">
         <activity
-            android:name=".Log_in"
+            android:name=".Activities.Log_in"
             android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -27,19 +27,17 @@
         </activity>
 
         <service
-            android:name=".MyService"
+            android:name=".Service_And_Connections.MyService"
             android:enabled="true"
             android:exported="true" />
 
-        <activity android:name=".ChatActivity" />
+        <activity android:name=".Activities.ChatActivity" />
         <activity android:name=".Design_Fragment.Home_act" />
-        <activity android:name=".Create_Group" />
-        <activity android:name=".Group_ChatActivity" />
-        <activity android:name=".Invitation" />
-        <activity android:name=".Design_Fragment.Custom_Adapter" />
-        <activity android:name=".Splash" />
-        <activity android:name=".Active_users" />
-        <activity android:name=".SIgn_up"></activity>
+        <activity android:name=".Activities.Group_ChatActivity" />
+        <activity android:name=".Activities.Invitation" />
+        <activity android:name=".Activities.Active_users" />
+        <activity android:name=".Activities.SIgn_up" />
+        <activity android:name=".Registered"></activity>
     </application>
 
 </manifest>

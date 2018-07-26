@@ -1,4 +1,4 @@
-package com.example.user.xmppchat;
+package com.example.user.xmppchat.Activities;
 
 import android.content.Intent;
 import android.support.v7.app.ActionBar;
@@ -12,6 +12,9 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import com.example.user.xmppchat.R;
+import com.example.user.xmppchat.Service_And_Connections.MyXMPP;
+
 import org.jivesoftware.smack.roster.Roster;
 import org.jivesoftware.smack.roster.RosterEntry;
 
@@ -20,6 +23,7 @@ import java.util.Collection;
 
 public class Active_users extends AppCompatActivity {
     ArrayList<String> arrayList = new ArrayList<>();
+    public static int c;
     ListView listView;
     @Override
     protected void onCreate(Bundle savedInstanceState) {

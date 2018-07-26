@@ -25,11 +25,15 @@
             android:layout_height="120dp" />
 
 
-        <VideoView
+       <!-- <VideoView
             android:id="@+id/video"
             android:layout_width="170dp"
             android:layout_height="120dp"
-            android:focusable="false" />
+            android:focusable="false" />-->
+        <cn.jzvd.JZVideoPlayerStandard
+            android:id="@+id/videoplayer"
+            android:layout_width="170dp"
+            android:layout_height="200dp"/>
 
 
     </LinearLayout>

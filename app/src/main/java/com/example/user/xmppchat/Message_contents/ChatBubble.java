@@ -1,4 +1,4 @@
-package com.example.user.xmppchat.Design_Fragment;
+package com.example.user.xmppchat.Message_contents;
 
 public class ChatBubble {
     private String content;

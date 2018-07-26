@@ -33,10 +33,13 @@
                         </option>
                         <option name="values">
                           <map>
+                            <entry key="assetSourceType" value="FILE" />
                             <entry key="color" value="ffffff" />
-                            <entry key="outputName" value="ic_person_black_24dp" />
+                            <entry key="height" value="512" />
+                            <entry key="outputName" value="ic_checked" />
                             <entry key="overrideSize" value="true" />
-                            <entry key="sourceFile" value="$PROJECT_DIR$/../share (3).svg" />
+                            <entry key="sourceFile" value="$PROJECT_DIR$/../checked.svg" />
+                            <entry key="width" value="512" />
                           </map>
                         </option>
                       </PersistentState>

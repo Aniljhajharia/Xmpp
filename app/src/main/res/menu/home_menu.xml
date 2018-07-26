@@ -2,10 +2,10 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
-        android:id="@+id/action_favorite"
+        android:id="@+id/action_favorite_grp"
         android:orderInCategory="300"
         android:title="Add Member"
-        android:icon="@drawable/ic_person_black_24dp"
+        android:icon="@drawable/ic_more_vert_black_24dp"
         app:showAsAction="ifRoom">
     </item>
 </menu>

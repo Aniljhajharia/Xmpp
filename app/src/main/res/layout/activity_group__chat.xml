@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context=".Group_ChatActivity">
+    tools:context=".Activities.Group_ChatActivity">
 
     <android.support.v7.widget.Toolbar
         android:id="@+id/tool_tool_grp"

@@ -1,4 +1,4 @@
-package com.example.user.xmppchat;
+package com.example.user.xmppchat.Activities;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -9,6 +9,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.widget.Toast;
 
 import com.example.user.xmppchat.Design_Fragment.BaseFragment;
+import com.example.user.xmppchat.R;
 
 import org.jivesoftware.smack.roster.Roster;
 import org.jivesoftware.smack.roster.RosterEntry;
@@ -37,16 +38,5 @@ public class BaseActivity extends AppCompatActivity {
         fragment.setArguments(bundle);
     }
 
-    /**
-     * Common method used to switch the activity
-     *
-     * @param bundle
-     * @param activity
-     */
-    public void switchActivity(Bundle bundle, Activity activity) {
-        Intent intent = new Intent(this, activity.getClass());
-        if (bundle != null)
-            intent.putExtras(bundle);
-        startActivity(intent);
-    }
+
 }

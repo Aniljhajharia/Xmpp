@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context=".ChatActivity">
+    tools:context=".Activities.ChatActivity">
 
     <android.support.v7.widget.Toolbar
         android:id="@+id/tool_tool"
@@ -63,7 +63,6 @@
                 android:background="@android:color/transparent"
                 android:hint="type msg..."
                 android:maxLines="4"
-                android:singleLine="true"
                 android:paddingBottom="10dp"
                 android:paddingLeft="8dp"
                 android:paddingTop="10dp" />

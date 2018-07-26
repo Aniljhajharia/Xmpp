@@ -1,4 +1,4 @@
-package com.example.user.xmppchat;
+package com.example.user.xmppchat.Activities;
 
 public class ResultObject {
     private String success;

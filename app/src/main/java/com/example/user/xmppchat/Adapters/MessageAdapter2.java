@@ -1,8 +1,7 @@
-package com.example.user.xmppchat;
+package com.example.user.xmppchat.Adapters;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
-import android.media.MediaPlayer;
 import android.net.Uri;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -11,16 +10,17 @@ import android.widget.ArrayAdapter;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.ImageView;
-import android.widget.MediaController;
 import android.widget.TextView;
 import android.widget.VideoView;
 
 import com.bumptech.glide.Glide;
-import com.example.user.xmppchat.Design_Fragment.Chat;
-import com.example.user.xmppchat.Design_Fragment.ChatBubble;
-import com.example.user.xmppchat.Design_Fragment.MessageAdapter;
+import com.example.user.xmppchat.Message_contents.ChatBubble2;
+import com.example.user.xmppchat.R;
 
 import java.util.List;
+
+import cn.jzvd.JZVideoPlayer;
+import cn.jzvd.JZVideoPlayerStandard;
 
 public class MessageAdapter2 extends ArrayAdapter<ChatBubble2> {
 
@@ -50,21 +50,20 @@ public class MessageAdapter2 extends ArrayAdapter<ChatBubble2> {
             convertView.setTag(holder);
             if (ChatBubble2.Tag() != null) {
                 if (ChatBubble2.Tag().equals("text")) {
-                    holder.videoView.setVisibility(View.GONE);
+                    holder.jzVideoPlayerStandard.setVisibility(View.GONE);
                     holder.msg2.setText(ChatBubble2.getContent());
                     holder.imageView.setVisibility(View.GONE);
                 } else if (ChatBubble2.Tag().equals("image")) {
-                    holder.videoView.setVisibility(View.GONE);
+                    holder.jzVideoPlayerStandard.setVisibility(View.GONE);
                     holder.msg2.setVisibility(View.GONE);
                     Glide.with(activity).load(ChatBubble2.getContent()).into(holder.imageView);
                 } else {
                     holder.imageView.setVisibility(View.GONE);
                     holder.msg2.setVisibility(View.GONE);
                     video_url = ChatBubble2.getContent();
-                    Uri uri = Uri.parse(video_url);
-                    holder.videoView.requestFocus();
-                    holder.videoView.setVideoURI(uri);
-                    holder.videoView.start();
+                    holder.jzVideoPlayerStandard.setUp(video_url,
+                            JZVideoPlayerStandard.SCREEN_WINDOW_NORMAL,
+                            "");
 
                 }
             }
@@ -76,21 +75,21 @@ public class MessageAdapter2 extends ArrayAdapter<ChatBubble2> {
             convertView.setTag(holder);
             if (ChatBubble2.Tag() != null) {
                 if (ChatBubble2.Tag().equals("text")) {
-                    holder.videoView.setVisibility(View.GONE);
+                    holder.jzVideoPlayerStandard.setVisibility(View.GONE);
 
                     holder.msg2.setText(ChatBubble2.getContent());
                     holder.imageView.setVisibility(View.GONE);
                 } else if (ChatBubble2.Tag().equals("image")) {
-                    holder.videoView.setVisibility(View.GONE);
+                    holder.jzVideoPlayerStandard.setVisibility(View.GONE);
                     holder.msg2.setVisibility(View.GONE);
                     Glide.with(activity).load(ChatBubble2.getContent()).into(holder.imageView);
                 } else {
                     holder.imageView.setVisibility(View.GONE);
                     holder.msg2.setVisibility(View.GONE);
                     video_url = ChatBubble2.getContent();
-                    Uri uri = Uri.parse(video_url);
-                    holder.videoView.setVideoURI(uri);
-                    holder.videoView.start();
+                    holder.jzVideoPlayerStandard.setUp(video_url,
+                            JZVideoPlayerStandard.SCREEN_WINDOW_NORMAL,
+                            "");
                 }
             }
 
@@ -116,15 +115,15 @@ public class MessageAdapter2 extends ArrayAdapter<ChatBubble2> {
     public static class ViewHolder {
         private TextView msg2;
         private ImageView imageView;
-        private VideoView videoView;
         private ImageButton button;
         private FrameLayout frameLayout;
-
+        JZVideoPlayerStandard jzVideoPlayerStandard;
         public ViewHolder(View v) {
             msg2 = (TextView) v.findViewById(R.id.txt_msg);
             imageView = (ImageView) v.findViewById(R.id.img);
-            videoView = (VideoView) v.findViewById(R.id.video);
+            jzVideoPlayerStandard = (JZVideoPlayerStandard) v.findViewById(R.id.videoplayer);
         }
     }
+
 }
 

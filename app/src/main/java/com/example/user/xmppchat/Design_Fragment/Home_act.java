@@ -5,12 +5,10 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
-import android.graphics.Color;
 import android.os.Build;
 import android.os.IBinder;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentActivity;
 
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
@@ -19,13 +17,15 @@ import android.os.Bundle;
 import android.support.v7.app.ActionBar;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.Menu;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.TextView;
 
-import com.example.user.xmppchat.BaseActivity;
-import com.example.user.xmppchat.MyService;
-import com.example.user.xmppchat.MyXMPP;
+import com.example.user.xmppchat.Activities.BaseActivity;
+import com.example.user.xmppchat.Activities.Log_in;
+import com.example.user.xmppchat.Service_And_Connections.MyService;
+import com.example.user.xmppchat.Service_And_Connections.MyXMPP;
 import com.example.user.xmppchat.R;
 
 import java.util.ArrayList;
@@ -55,14 +55,15 @@ public class Home_act extends BaseActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home_act);
+        if(mService!=null)
+        mService.sysTest(Log_in.user, Log_in.pass, this);
         Toolbar toolbar = findViewById(R.id.tool_home);
-        textView = findViewById(R.id.logged);
         setSupportActionBar(toolbar);
         ActionBar actionbar = getSupportActionBar();
         String name = MyXMPP.connection.getUser();
         doBindService();
-        // actionbar.setTitle(MyXMPP.connection.getUser().substring(0,name.length()-11));
-        textView.setText(MyXMPP.connection.getUser().substring(0, name.length() - 11));
+        actionbar.setTitle(MyXMPP.connection.getUser().substring(0, name.length() - 11));
+        getSupportActionBar().setIcon(R.drawable.ic_person_black_24dp);
         viewPager = (ViewPager) findViewById(R.id.container);
         addTabs(viewPager);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
@@ -80,6 +81,11 @@ public class Home_act extends BaseActivity {
         tabLayout.getTabAt(1).setText("Groups");
     }
 
+    /**
+     * used for tabs of viewpager
+     *
+     * @param viewPager
+     */
     private void addTabs(ViewPager viewPager) {
         ViewPagerAdapter adapter = new ViewPagerAdapter(getSupportFragmentManager());
         adapter.addFrag(new Frag_Friend(), "friends");
@@ -122,11 +128,17 @@ public class Home_act extends BaseActivity {
         MyXMPP.connection.addConnectionListener(new MyXMPP.XMPPConnectionListener());
     }
 
+    /**
+     * used to bind the service
+     */
     void doBindService() {
-        bindService(new Intent(this, MyService.class),mConnection ,
+        bindService(new Intent(this, MyService.class), mConnection,
                 Context.BIND_AUTO_CREATE);
     }
 
+    /**
+     * if activity destroyed then close the connection and unbind service
+     */
     @Override
     protected void onDestroy() {
         super.onDestroy();
@@ -137,6 +149,11 @@ public class Home_act extends BaseActivity {
 
         }
 
-        System.out.println("Activity destroyed");
+        System.out.println("Activity destroyed home");
     }
+  /*  @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.home_menu, menu);
+        return super.onCreateOptionsMenu(menu);
+    }*/
 }

@@ -1,4 +1,4 @@
-package com.example.user.xmppchat;
+package com.example.user.xmppchat.Activities;
 
 import android.Manifest;
 import android.app.Activity;
@@ -33,10 +33,13 @@ import android.widget.Toast;
 
 import com.cloudinary.Cloudinary;
 import com.cloudinary.utils.ObjectUtils;
-import com.example.user.xmppchat.Design_Fragment.ChatBubble;
+import com.example.user.xmppchat.Message_contents.ChatBubble;
 import com.example.user.xmppchat.File_upload.ApiClient;
 import com.example.user.xmppchat.File_upload.ApiInterface;
 import com.example.user.xmppchat.File_upload.ImageResponse;
+import com.example.user.xmppchat.R;
+import com.example.user.xmppchat.Service_And_Connections.MyService;
+import com.example.user.xmppchat.Service_And_Connections.MyXMPP;
 
 import org.jivesoftware.smack.SmackException;
 import org.jivesoftware.smack.XMPPConnection;
@@ -46,11 +49,11 @@ import org.jivesoftware.smackx.privacy.packet.PrivacyItem;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
+import cn.jzvd.JZVideoPlayer;
 import hani.momanii.supernova_emoji_library.Actions.EmojIconActions;
 import hani.momanii.supernova_emoji_library.Helper.EmojiconEditText;
 import okhttp3.MediaType;
@@ -61,13 +64,10 @@ import retrofit2.Callback;
 import retrofit2.Response;
 import retrofit2.Retrofit;
 
-import static com.example.user.xmppchat.Group_ChatActivity.getContext;
-
 public class ChatActivity extends AppCompatActivity {
     String presence, sender, receiver;
     ListView msglist;
     static EditText msg;
-    public static ArrayList<String> arrayList = new ArrayList<>();
     Cloudinary cloudinary;
     static boolean myMessage = true;
     View view;
@@ -77,9 +77,10 @@ public class ChatActivity extends AppCompatActivity {
     EmojiconEditText emojiconEditText;
     public static ChatActivity context1;
     ApiInterface apiInterface;
-    String auth = "Client-ID a2181c246a3c5d0";
-    String auth2 = "client_secret: c4cdb9d293cee07b0a23c790fe259a9de924d763";
     private MyService mService;
+    /**
+     * listener for check service connection if connected or not
+     */
     private final ServiceConnection mConnection = new ServiceConnection() {
         @Override
         public void onServiceConnected(final ComponentName name, final IBinder service) {
@@ -93,6 +94,7 @@ public class ChatActivity extends AppCompatActivity {
             Log.d("TAG", "onServiceDisconnected");
         }
     };
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -110,12 +112,17 @@ public class ChatActivity extends AppCompatActivity {
             window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
             window.setStatusBarColor(getResources().getColor(R.color.colorbar));
         }
+        /**
+         * emoji library
+         */
         EmojIconActions emojIcon = new EmojIconActions(this, view, emojiconEditText, imageView, "#FF7F50", "#FF7F50", "#FF7F50");
 
         emojIcon.ShowEmojIcon();
 
         emojIcon.setIconsIds(R.drawable.ic_keyboard_black_24dp, R.drawable.ic_insert_emoticon_black_24dp);
-
+/**
+ * setting action bar
+ */
         ActionBar actionbar = getSupportActionBar();
         actionbar.setDisplayHomeAsUpEnabled(true);
         actionbar.setHomeAsUpIndicator(R.drawable.ic_arrow_back_black_24dp);
@@ -130,6 +137,9 @@ public class ChatActivity extends AppCompatActivity {
         msglist.setTranscriptMode(ListView.TRANSCRIPT_MODE_ALWAYS_SCROLL);
         msglist.setStackFromBottom(true);
         msglist.setAdapter(Log_in.adapter);
+        /**
+         * send button to send the message using xmpp to roster
+         */
         findViewById(R.id.send_btn).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -150,6 +160,9 @@ public class ChatActivity extends AppCompatActivity {
                 }
             }
         });
+        /**
+         * sending images to roster
+         */
         findViewById(R.id.send_btn_image).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -166,6 +179,9 @@ public class ChatActivity extends AppCompatActivity {
                         dialog.dismiss();
                     }
                 });
+                /**
+                 * for sending video to user
+                 */
                 dialog.findViewById(R.id.video_dialog).setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
@@ -180,6 +196,9 @@ public class ChatActivity extends AppCompatActivity {
         });
         msglist.setLongClickable(true);
         msglist.setClickable(true);
+        /**
+         * for deleting selected item on long press
+         */
         msglist.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
 
             @Override
@@ -261,6 +280,9 @@ public class ChatActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, final int resultCode, Intent data) {
         ActivityCompat.requestPermissions(ChatActivity.this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, 123);
         super.onActivityResult(requestCode, resultCode, data);
+        /**
+         * used to select image and get path of image
+         */
         if (requestCode == 123 && resultCode == Activity.RESULT_OK) {
 
             Uri selectedImage = data.getData();
@@ -270,18 +292,16 @@ public class ChatActivity extends AppCompatActivity {
                 return;
 
             cursor.moveToFirst();
-
             int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
             String filePath = cursor.getString(columnIndex);
             cursor.close();
-
             File file = new File(filePath);
-
-
             RequestBody reqFile = RequestBody.create(MediaType.parse("image/*"), file);
             MultipartBody.Part body = MultipartBody.Part.createFormData("upload", file.getName(), reqFile);
             RequestBody name = RequestBody.create(MediaType.parse("text/plain"), "upload_test");
-            // retrofit2.Call<okhttp3.ResponseBody> req =apiInterface.postImage(body, name);
+            /**
+             * using retrofit to get response from server
+             */
             ApiClient apiClient = new ApiClient();
             Retrofit retrofit = apiClient.getClient();
             ApiInterface api = retrofit.create(ApiInterface.class);
@@ -310,7 +330,11 @@ public class ChatActivity extends AppCompatActivity {
                     t.printStackTrace();
                 }
             });
-        } else if (requestCode == 456 && resultCode == Activity.RESULT_OK) {
+        }
+        /**
+         * selecting video for sending and getting path
+         */
+        else if (requestCode == 456 && resultCode == Activity.RESULT_OK) {
             Uri selectedImage = data.getData();
             String[] filePathColumn = {MediaStore.Video.Media.DATA};
             Cursor cursor = getContentResolver().query(selectedImage, filePathColumn, null, null, null);
@@ -328,17 +352,19 @@ public class ChatActivity extends AppCompatActivity {
 
         }
     }
+
     @Override
     protected void onResume() {
         super.onResume();
         MyXMPP.connection.addConnectionListener(new MyXMPP.XMPPConnectionListener());
     }
 
-    public static ChatActivity getInstance() {
-
-        return context1;
-    }
-
+    /**
+     * used to set video parameters and sending video to roster using cloudinary
+     *
+     * @param file
+     * @param filepath
+     */
     public void sendVideo(final File file, final String filepath) {
         AsyncTask<Void, Void, Map> connectionThread = new AsyncTask<Void, Void, Map>() {
             Map config;
@@ -377,10 +403,12 @@ public class ChatActivity extends AppCompatActivity {
         connectionThread.execute();
     }
 
-    InputStream getAssetStream(String filename) throws IOException {
-        return getContext().getAssets().open(filename);
-    }
-
+    /**
+     * used to add privacy list of user
+     *
+     * @param connection
+     * @param userName
+     */
     public void XMPPAddNewPrivacyList(XMPPConnection connection, String userName) {
 
         PrivacyListManager privacyManager = PrivacyListManager.getInstanceFor(MyXMPP.connection);
@@ -403,13 +431,37 @@ public class ChatActivity extends AppCompatActivity {
             e.printStackTrace();
         } catch (SmackException.NotConnectedException e) {
             e.printStackTrace();
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
+
+    /**
+     * used for binding service with actvity
+     */
     void doBindService() {
-        bindService(new Intent(this, MyService.class),mConnection ,
+        bindService(new Intent(this, MyService.class), mConnection,
                 Context.BIND_AUTO_CREATE);
     }
 
+    /**
+     * when activity destroyed then close the connection and unbind service
+     */
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        System.out.println("Activity destroyed chat" );
+    }
+    @Override
+    public void onBackPressed() {
+        if (JZVideoPlayer.backPress()) {
+            return;
+        }
+        super.onBackPressed();
+    }
+    @Override
+    protected void onPause() {
+        super.onPause();
+        JZVideoPlayer.releaseAllVideos();
+    }
 }

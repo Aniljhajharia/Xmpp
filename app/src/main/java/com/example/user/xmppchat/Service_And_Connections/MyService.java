@@ -1,4 +1,4 @@
-package com.example.user.xmppchat;
+package com.example.user.xmppchat.Service_And_Connections;
 
 import android.app.Service;
 import android.content.Context;
@@ -7,12 +7,6 @@ import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.os.Binder;
 import android.os.IBinder;
-import android.os.Message;
-import android.os.RemoteException;
-import android.widget.ArrayAdapter;
-
-import com.example.user.xmppchat.Design_Fragment.ChatBubble;
-import com.example.user.xmppchat.Design_Fragment.MessageAdapter;
 
 import java.lang.ref.WeakReference;
 
@@ -20,8 +14,6 @@ import java.lang.ref.WeakReference;
 public class MyService extends Service {
     public static ConnectivityManager cm;
     public static MyXMPP xmpp;
-    public static MyXMPP instance = null;
-    public static boolean instanceCreated = false;
     private static final String DOMAIN = "192.168.1.114";
     String user;
     String pass;
@@ -96,11 +88,11 @@ public class MyService extends Service {
         System.out.print("Am destroyed anil killed me");
     }
 
-   /* @Override
+    @Override
     public void onTaskRemoved(Intent rootIntent) {
         super.onTaskRemoved(rootIntent);
         MyXMPP.connection.disconnect();
         System.out.print("Am in onTaskRemoved and I would be killed");
 
-    }*/
+    }
 }

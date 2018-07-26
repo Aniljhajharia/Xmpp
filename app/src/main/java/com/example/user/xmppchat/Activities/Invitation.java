@@ -1,4 +1,4 @@
-package com.example.user.xmppchat;
+package com.example.user.xmppchat.Activities;
 
 import android.os.Handler;
 import android.os.Looper;
@@ -12,13 +12,12 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import com.example.user.xmppchat.R;
+import com.example.user.xmppchat.Service_And_Connections.MyXMPP;
+
 import org.jivesoftware.smack.SmackException;
-import org.jivesoftware.smack.XMPPConnection;
-import org.jivesoftware.smack.XMPPException;
-import org.jivesoftware.smack.packet.Message;
 import org.jivesoftware.smack.roster.Roster;
 import org.jivesoftware.smack.roster.RosterEntry;
-import org.jivesoftware.smackx.muc.InvitationListener;
 import org.jivesoftware.smackx.muc.InvitationRejectionListener;
 import org.jivesoftware.smackx.muc.MultiUserChat;
 import org.jivesoftware.smackx.muc.MultiUserChatManager;
@@ -42,27 +41,27 @@ public class Invitation extends AppCompatActivity {
         ActionBar actionbar = getSupportActionBar();
         actionbar.setDisplayHomeAsUpEnabled(true);
         actionbar.setTitle("Add Member");
-            getRoaster();
+        getRoaster();
         initList();
-        groupName =getIntent().getStringExtra("GroupName");
+        groupName = getIntent().getStringExtra("GroupName");
 
     }
 
-    public void initList(){
-        ListView listView=findViewById(R.id.rosters);
+    public void initList() {
+        ListView listView = findViewById(R.id.rosters);
         ArrayAdapter arrayAdapter = new ArrayAdapter(this, android.R.layout.simple_list_item_1, arrayList2);
         listView.setAdapter(arrayAdapter);
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-               sendInvitation(groupName,arrayList2.get(position));
-               onBackPressed();
+                sendInvitation(groupName, arrayList2.get(position));
+                onBackPressed();
             }
         });
     }
 
 
-    public void getRoaster(){
+    public void getRoaster() {
         final Roster roster = Roster.getInstanceFor(MyXMPP.connection);
         Collection<RosterEntry> entries = roster.getEntries();
         for (RosterEntry entry : entries) {
@@ -71,22 +70,25 @@ public class Invitation extends AppCompatActivity {
 
         }
     }
+
     @Override
     public boolean onSupportNavigateUp() {
         onBackPressed();
         return true;
     }
+
     /**
      * Send the inivitation to the group
+     *
      * @param groupName
      * @param usename
      */
-    public void sendInvitation(String groupName,String usename){
+    public void sendInvitation(String groupName, String usename) {
         MultiUserChatManager manager = MultiUserChatManager.getInstanceFor(MyXMPP.connection);
-        MultiUserChat muc = manager.getMultiUserChat(groupName );
+        MultiUserChat muc = manager.getMultiUserChat(groupName);
         muc.getOccupants();
         try {
-            muc.invite(usename,"Join the group");
+            muc.invite(usename, "Join the group");
             muc.addInvitationRejectionListener(new InvitationRejectionListener() {
                 @Override
                 public void invitationDeclined(String invitee, String reason) {

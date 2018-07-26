@@ -11,6 +11,7 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -20,8 +21,8 @@ import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Toast;
 
-import com.example.user.xmppchat.Group_ChatActivity;
-import com.example.user.xmppchat.MyXMPP;
+import com.example.user.xmppchat.Activities.Group_ChatActivity;
+import com.example.user.xmppchat.Service_And_Connections.MyXMPP;
 import com.example.user.xmppchat.R;
 
 import org.jivesoftware.smack.MessageListener;
@@ -49,8 +50,6 @@ import java.util.List;
 public class Frag_Groups extends BaseFragment {
 
     ArrayList<String> arrayList = new ArrayList<>();
-    ArrayList<String> arrayList2 = new ArrayList<>();
-    ArrayList<Subscription> arrayList3 = new ArrayList<>();
     MultiUserChatManager Mmanager;
     ArrayAdapter arrayAdapter;
     ListView listView;
@@ -81,30 +80,18 @@ public class Frag_Groups extends BaseFragment {
             }
             arrayAdapter = new ArrayAdapter(getContext(), android.R.layout.simple_list_item_1, arrayList);
             listView.setAdapter(arrayAdapter);
-            /*arrayList2.clear();
-            PubSubManager pubSubManager = new PubSubManager(MyXMPP.connection);
-            List<Subscription> subscriptions = pubSubManager.getSubscriptions();
-            for (int k = 0; k < subscriptions.size(); k++) {
-                //s  arrayList.add(joinedRooms.get(i));
-                //arrayList3.add(subscriptions.get(k));
-                arrayList2.add(subscriptions.get(k).getNode());
-            }*/
-            //arrayAdapter = new ArrayAdapter(getContext(), android.R.layout.simple_list_item_1, arrayList);
         } catch (Exception e) {
 
         }
-        //Intent intent=getIntent();
-        // arrayList=intent.getStringArrayListExtra("key");
-
         try {
-            // addlist();
-            //listView.setAdapter(arrayAdapter);
-
             listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 @Override
                 public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                     MultiUserChatManager manager = MultiUserChatManager.getInstanceFor(MyXMPP.connection);
                     MultiUserChat muc = manager.getMultiUserChat(arrayList.get(position));
+                    /**
+                     * listener called when new messages arrives in group
+                     */
                     muc.addMessageListener(new MessageListener() {
                         @Override
                         public void processMessage(final Message message) {
@@ -112,18 +99,15 @@ public class Frag_Groups extends BaseFragment {
                             new Handler(Looper.getMainLooper()).post(new Runnable() {
                                 @Override
                                 public void run() {
-                                    Toast.makeText(getContext(), message.getBody(), Toast.LENGTH_LONG).show();
+//                                    Toast.makeText(getContext(), message.getBody(), Toast.LENGTH_LONG).show();
                                     Log.d("message", message.getBody());
                                     if (message.getBody() != null) {
                                         try {
-                                           if((Group_ChatActivity.receiver+"/"+Group_ChatActivity.sender).equals(message.getFrom()))
-                                           {
-                                               myMessage=true;
-                                           }
-                                           else
-                                               myMessage=false;
+                                            if ((Group_ChatActivity.receiver + "/" + Group_ChatActivity.sender).equals(message.getFrom())) {
+                                                myMessage = true;
+                                            } else
+                                                myMessage = false;
                                             Group_ChatActivity.context.chatting_grp(message.getBody(), myMessage, message.getSubject());
-                                            //message.getFrom().substring(Group_ChatActivity.receiver.length()+1)+" : "+
                                         } catch (SmackException.NotConnectedException e) {
                                             e.printStackTrace();
                                         }
@@ -135,6 +119,9 @@ public class Frag_Groups extends BaseFragment {
 
                         }
                     });
+                    /**
+                     * start Group chat activity in joined groups
+                     */
                     Intent intent = new Intent(getContext(), Group_ChatActivity.class);
                     String s = arrayList.get(position);
                     intent.putExtra("receiver", s);
@@ -145,6 +132,9 @@ public class Frag_Groups extends BaseFragment {
         } catch (Exception e) {
             Toast.makeText(getContext(), "No Groups to show", Toast.LENGTH_LONG).show();
         }
+        /**
+         * used to create new group with name and nickname...and joined as owner
+         */
         view.findViewById(R.id.add_group_farg).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -208,8 +198,8 @@ public class Frag_Groups extends BaseFragment {
 
                             try {
                                 muc.sendConfigurationForm(answerForm);
-                                String name=MyXMPP.connection.getUser();
-                                muc.join(MyXMPP.connection.getUser().substring(0,(name.length()-11)));
+                                String name = MyXMPP.connection.getUser();
+                                muc.join(MyXMPP.connection.getUser().substring(0, (name.length() - 11)));
                             } catch (SmackException.NoResponseException e) {
                                 e.printStackTrace();
                             } catch (XMPPException.XMPPErrorException e) {
@@ -221,7 +211,9 @@ public class Frag_Groups extends BaseFragment {
                             e.printStackTrace();
                         }
                         dialog.dismiss();
-
+/**
+ * getiing list of joined rooms
+ */
                         try {
                             List<String> joinedRooms = Mmanager.getJoinedRooms(MyXMPP.connection.getUser());
                             PubSubManager pubSubManager = new PubSubManager(MyXMPP.connection);
@@ -231,11 +223,7 @@ public class Frag_Groups extends BaseFragment {
                                 arrayList.add(joinedRooms.get(j));
 
                             }
-                           /* arrayList2.clear();
-                            for (int j = 0; j < subscriptions.size(); j++) {
-                                //s  arrayList.add(joinedRooms.get(i));
-                                arrayList2.add(subscriptions.get(j).getNode());
-                            }*/
+
                             addlist();
 
                         } catch (SmackException.NoResponseException e) {
@@ -252,13 +240,117 @@ public class Frag_Groups extends BaseFragment {
 
     }
 
+    /**
+     * used for setting list on adapter
+     */
     public void addlist() {
         arrayAdapter = new ArrayAdapter(getContext(), android.R.layout.simple_list_item_1, arrayList);
         listView.setAdapter(arrayAdapter);
     }
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+        if (id == R.id.action_favorite_grp) {
+            final Dialog dialog = new Dialog(getContext());
+            dialog.setContentView(R.layout.dialog);
+            dialog.setTitle("Custom Dialog");
+            dialog.show();
 
-    public static boolean ismyMessage(boolean mymessage) {
-        myMessage = mymessage;
-        return mymessage;
+            Button create = (Button) dialog.findViewById(R.id.create);
+            create.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    EditText grp_name = (EditText) dialog.findViewById(R.id.dialog);
+                    final String group_name = grp_name.getText().toString();
+
+                    MultiUserChat muc = Mmanager.getMultiUserChat(group_name + "@conference.test");
+                    try {
+                        muc.create(MyXMPP.connection.getUser());
+                        PubSubManager mgr = new PubSubManager(MyXMPP.connection);
+                        LeafNode leaf = mgr.createNode(group_name);
+                        ConfigureForm form = new ConfigureForm(DataForm.Type.submit);
+                        form.setAccessModel(AccessModel.open);
+                        form.setDeliverPayloads(false);
+                        form.setNotifyRetract(true);
+                        form.setPersistentItems(true);
+                        form.setPublishModel(PublishModel.open);
+                        leaf.sendConfigurationForm(form);
+                        leaf.subscribe(MyXMPP.connection.getUser());
+                        leaf.send();
+                    } catch (XMPPException.XMPPErrorException e) {
+                        e.printStackTrace();
+                    } catch (SmackException e) {
+                        e.printStackTrace();
+                    }
+
+                    try {
+                        Form form = muc.getConfigurationForm();
+                        Form answerForm = form.createAnswerForm();
+                        for (FormField field : form.getFields()) {
+                            if (!FormField.Type.hidden.name().equals(field.getType()) && field.getVariable() != null) {
+                                answerForm.setDefaultAnswer(field.getVariable());
+                            }
+
+                        }
+
+                        List maxusers = new ArrayList();
+                        maxusers.add("100");
+
+                        List cast_values = new ArrayList();
+                        cast_values.add("moderator");
+                        cast_values.add("participant");
+                        answerForm.setAnswer("muc#roomconfig_presencebroadcast", cast_values);
+
+                        answerForm.setAnswer("muc#roomconfig_publicroom", true);
+
+                        answerForm.setAnswer("muc#roomconfig_persistentroom", true);
+
+                        answerForm.setAnswer("x-muc#roomconfig_canchangenick", true);
+
+                        answerForm.setAnswer("x-muc#roomconfig_registration", true);
+
+                        try {
+                            muc.sendConfigurationForm(answerForm);
+                            String name = MyXMPP.connection.getUser();
+                            muc.join(MyXMPP.connection.getUser().substring(0, (name.length() - 11)));
+                        } catch (SmackException.NoResponseException e) {
+                            e.printStackTrace();
+                        } catch (XMPPException.XMPPErrorException e) {
+                            e.printStackTrace();
+                        } catch (SmackException.NotConnectedException e) {
+                            e.printStackTrace();
+                        }
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                    dialog.dismiss();
+/**
+ * getiing list of joined rooms
+ */
+                    try {
+                        List<String> joinedRooms = Mmanager.getJoinedRooms(MyXMPP.connection.getUser());
+                        PubSubManager pubSubManager = new PubSubManager(MyXMPP.connection);
+                        List<Subscription> subscriptions = pubSubManager.getSubscriptions();
+                        arrayList.clear();
+                        for (int j = 0; j < joinedRooms.size(); j++) {
+                            arrayList.add(joinedRooms.get(j));
+
+                        }
+
+                        addlist();
+
+                    } catch (SmackException.NoResponseException e) {
+                        e.printStackTrace();
+                    } catch (XMPPException.XMPPErrorException e) {
+                        e.printStackTrace();
+                    } catch (SmackException.NotConnectedException e) {
+                        e.printStackTrace();
+                    }
+                }
+            });
+        }
+
+        return super.onOptionsItemSelected(item);
     }
+
 }

@@ -24,13 +24,10 @@
             android:layout_width="170dp"
             android:layout_height="120dp"
             />
-
-
-        <VideoView
-            android:id="@+id/video"
+        <cn.jzvd.JZVideoPlayerStandard
+            android:id="@+id/videoplayer"
             android:layout_width="170dp"
-            android:layout_height="120dp"
-            android:focusable="false" />
+            android:layout_height="200dp"/>
 
     </LinearLayout>
 </RelativeLayout>

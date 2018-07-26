@@ -1,4 +1,4 @@
-package com.example.user.xmppchat;
+package com.example.user.xmppchat.Activities;
 
 
 import android.app.Activity;
@@ -26,7 +26,6 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ListView;
@@ -35,10 +34,14 @@ import android.widget.Toast;
 
 import com.cloudinary.Cloudinary;
 import com.cloudinary.utils.ObjectUtils;
-import com.example.user.xmppchat.Design_Fragment.ChatBubble;
+import com.example.user.xmppchat.Adapters.MessageAdapter2;
 import com.example.user.xmppchat.File_upload.ApiClient;
 import com.example.user.xmppchat.File_upload.ApiInterface;
 import com.example.user.xmppchat.File_upload.ImageResponse;
+import com.example.user.xmppchat.Message_contents.ChatBubble2;
+import com.example.user.xmppchat.R;
+import com.example.user.xmppchat.Service_And_Connections.MyService;
+import com.example.user.xmppchat.Service_And_Connections.MyXMPP;
 
 import org.jivesoftware.smack.SmackException;
 
@@ -124,6 +127,9 @@ public class Group_ChatActivity extends AppCompatActivity {
         msglist2.setAdapter(adapter2);
         msglist2.setLongClickable(true);
         msglist2.setClickable(true);
+        /**
+         * for delete selected item in list on long press
+         */
         msglist2.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
 
             @Override
@@ -150,6 +156,9 @@ public class Group_ChatActivity extends AppCompatActivity {
             }
 
         });
+        /**
+         * to send text in joined selected group
+         */
         findViewById(R.id.grp_end_btn).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -160,6 +169,9 @@ public class Group_ChatActivity extends AppCompatActivity {
                 }
             }
         });
+        /***
+         * to send image and video in joined group
+         */
         findViewById(R.id.send_btn_image_grp).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -229,6 +241,13 @@ public class Group_ChatActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
+    /**
+     * keep on chatting in group
+     * @param msg1
+     * @param myMessage
+     * @param tag
+     * @throws SmackException.NotConnectedException
+     */
     public void chatting_grp(String msg1, boolean myMessage, String tag) throws SmackException.NotConnectedException {
         ChatBubble2 chatBubble2 = new ChatBubble2(msg1, myMessage, tag);
         ChatBubbles2.add(chatBubble2);
@@ -237,13 +256,13 @@ public class Group_ChatActivity extends AppCompatActivity {
 
     }
 
-    public boolean ismyMessage(boolean myMessage) {
-        return myMessage;
-    }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
+        /**
+         *for selecting image to send and get path of image
+         */
         if (requestCode == 123 && resultCode == Activity.RESULT_OK) {
 
             Uri selectedImage = data.getData();
@@ -293,7 +312,11 @@ public class Group_ChatActivity extends AppCompatActivity {
                     t.printStackTrace();
                 }
             });
-        } else if (requestCode == 456 && resultCode == Activity.RESULT_OK) {
+        }
+        /**
+         *for selecting video to send and get path of video
+         */
+        else if (requestCode == 456 && resultCode == Activity.RESULT_OK) {
             Uri selectedImage = data.getData();
             String[] filePathColumn = {MediaStore.Video.Media.DATA};
             Cursor cursor = getContentResolver().query(selectedImage, filePathColumn, null, null, null);
@@ -312,6 +335,11 @@ public class Group_ChatActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * used for sending video to group with setting parameter of video
+     * @param file
+     * @param filepath
+     */
     public void sendVideo(final File file, final String filepath) {
         AsyncTask<Void, Void, Map> connectionThread = new AsyncTask<Void, Void, Map>() {
             Map config;
@@ -348,11 +376,25 @@ public class Group_ChatActivity extends AppCompatActivity {
                 }
             }
         };
-        connectionThread.execute();
+        connectionThread.execute();  //execute thread
     }
+
+    /**
+     * used to bind service
+     */
     void doBindService() {
         bindService(new Intent(this, MyService.class),mConnection ,
                 Context.BIND_AUTO_CREATE);
+    }
+    /**
+     * when activity destroyed then close the connection and unbind service
+     */
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+
+
+        System.out.println("Activity destroyed Groupchat" );
     }
 }
 
