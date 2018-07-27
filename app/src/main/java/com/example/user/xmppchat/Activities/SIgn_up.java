@@ -2,15 +2,16 @@ package com.example.user.xmppchat.Activities;
 
 import android.content.Intent;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.EditText;
-import android.widget.Toast;
 
 import com.example.user.xmppchat.R;
-import com.example.user.xmppchat.Registered;
 
 import org.jivesoftware.smack.ConnectionConfiguration;
 import org.jivesoftware.smack.SmackException;
@@ -20,7 +21,6 @@ import org.jivesoftware.smack.tcp.XMPPTCPConnectionConfiguration;
 import org.jivesoftware.smackx.iqregister.AccountManager;
 
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.Map;
 
 public class SIgn_up extends AppCompatActivity {
@@ -34,6 +34,11 @@ public class SIgn_up extends AppCompatActivity {
         setContentView(R.layout.activity_sign_up);
         editText1 = findViewById(R.id.user);
         editText2 = findViewById(R.id.password_sign);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            Window window = getWindow();
+            window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+            window.setStatusBarColor(getResources().getColor(R.color.colorbar));
+        }
         findViewById(R.id.sign).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -97,6 +102,9 @@ public class SIgn_up extends AppCompatActivity {
             @Override
             protected void onPostExecute(Map map) {
                 super.onPostExecute(map);
+
+                 // if username and password is empty then show error else proceed
+
                 if (TextUtils.isEmpty(editText1.getText())) {
                     editText1.setError("Username is required!");
 

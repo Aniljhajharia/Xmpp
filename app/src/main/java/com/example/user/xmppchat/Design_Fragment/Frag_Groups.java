@@ -89,9 +89,9 @@ public class Frag_Groups extends BaseFragment {
                 public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                     MultiUserChatManager manager = MultiUserChatManager.getInstanceFor(MyXMPP.connection);
                     MultiUserChat muc = manager.getMultiUserChat(arrayList.get(position));
-                    /**
-                     * listener called when new messages arrives in group
-                     */
+
+                    // listener called when new messages arrives in group
+
                     muc.addMessageListener(new MessageListener() {
                         @Override
                         public void processMessage(final Message message) {
@@ -119,9 +119,9 @@ public class Frag_Groups extends BaseFragment {
 
                         }
                     });
-                    /**
-                     * start Group chat activity in joined groups
-                     */
+
+                     // start Group chat activity in joined groups
+
                     Intent intent = new Intent(getContext(), Group_ChatActivity.class);
                     String s = arrayList.get(position);
                     intent.putExtra("receiver", s);
@@ -132,9 +132,9 @@ public class Frag_Groups extends BaseFragment {
         } catch (Exception e) {
             Toast.makeText(getContext(), "No Groups to show", Toast.LENGTH_LONG).show();
         }
-        /**
-         * used to create new group with name and nickname...and joined as owner
-         */
+
+         // used to create new group with name and nickname...and joined as owner
+
         view.findViewById(R.id.add_group_farg).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -211,9 +211,9 @@ public class Frag_Groups extends BaseFragment {
                             e.printStackTrace();
                         }
                         dialog.dismiss();
-/**
- * getiing list of joined rooms
- */
+
+                         //getting list of joined rooms
+
                         try {
                             List<String> joinedRooms = Mmanager.getJoinedRooms(MyXMPP.connection.getUser());
                             PubSubManager pubSubManager = new PubSubManager(MyXMPP.connection);
@@ -324,9 +324,9 @@ public class Frag_Groups extends BaseFragment {
                         e.printStackTrace();
                     }
                     dialog.dismiss();
-/**
- * getiing list of joined rooms
- */
+
+                    // getiing list of joined rooms
+
                     try {
                         List<String> joinedRooms = Mmanager.getJoinedRooms(MyXMPP.connection.getUser());
                         PubSubManager pubSubManager = new PubSubManager(MyXMPP.connection);

@@ -251,7 +251,7 @@ public class MyXMPP implements PingFailedListener {
         }
     }
 
-    public void connect(final Context context_main) {
+    public  void connect(final Context context_main) {
         context_main2 = context_main;
         AsyncTask<Void, Void, Boolean> connectionThread = new AsyncTask<Void, Void, Boolean>() {
 

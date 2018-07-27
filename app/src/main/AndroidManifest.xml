@@ -11,14 +11,16 @@
 
     <application
         android:allowBackup="true"
-        android:icon="@mipmap/ic_launcher"
+        android:icon="@drawable/ic_email"
         android:label="@string/app_name"
-        android:roundIcon="@mipmap/ic_launcher_round"
+        android:roundIcon="@drawable/ic_email"
         android:supportsRtl="true"
         android:theme="@style/Theme.AppCompat.Light.NoActionBar">
         <activity
             android:name=".Activities.Log_in"
-            android:theme="@style/AppTheme.NoActionBar">
+            android:theme="@style/AppTheme.NoActionBar"
+            android:configChanges="keyboard|keyboardHidden|orientation|screenSize"
+            android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -31,13 +33,27 @@
             android:enabled="true"
             android:exported="true" />
 
-        <activity android:name=".Activities.ChatActivity" />
-        <activity android:name=".Design_Fragment.Home_act" />
-        <activity android:name=".Activities.Group_ChatActivity" />
-        <activity android:name=".Activities.Invitation" />
-        <activity android:name=".Activities.Active_users" />
-        <activity android:name=".Activities.SIgn_up" />
-        <activity android:name=".Registered"></activity>
+        <activity android:name=".Activities.ChatActivity"
+            android:configChanges="keyboard|keyboardHidden|orientation|screenSize"
+            android:screenOrientation="portrait"/>
+        <activity android:name=".Design_Fragment.Home_act"
+            android:configChanges="keyboard|keyboardHidden|orientation|screenSize"
+            android:screenOrientation="portrait"/>
+        <activity android:name=".Activities.Group_ChatActivity"
+            android:configChanges="keyboard|keyboardHidden|orientation|screenSize"
+            android:screenOrientation="portrait"/>
+        <activity android:name=".Activities.Invitation"
+            android:configChanges="keyboard|keyboardHidden|orientation|screenSize"
+            android:screenOrientation="portrait"/>
+        <activity android:name=".Activities.Active_users"
+            android:configChanges="keyboard|keyboardHidden|orientation|screenSize"
+            android:screenOrientation="portrait"/>
+        <activity android:name=".Activities.SIgn_up"
+            android:configChanges="keyboard|keyboardHidden|orientation|screenSize"
+            android:screenOrientation="portrait"/>
+        <activity android:name=".Activities.Registered">
+
+        </activity>
     </application>
 
 </manifest>

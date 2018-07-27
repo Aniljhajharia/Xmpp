@@ -127,9 +127,9 @@ public class Group_ChatActivity extends AppCompatActivity {
         msglist2.setAdapter(adapter2);
         msglist2.setLongClickable(true);
         msglist2.setClickable(true);
-        /**
-         * for delete selected item in list on long press
-         */
+
+          //for delete selected item in list on long press
+
         msglist2.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
 
             @Override
@@ -156,9 +156,9 @@ public class Group_ChatActivity extends AppCompatActivity {
             }
 
         });
-        /**
-         * to send text in joined selected group
-         */
+
+         //to send text in joined selected group
+
         findViewById(R.id.grp_end_btn).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -169,9 +169,9 @@ public class Group_ChatActivity extends AppCompatActivity {
                 }
             }
         });
-        /***
-         * to send image and video in joined group
-         */
+
+         //to send image and video in joined group
+
         findViewById(R.id.send_btn_image_grp).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -260,9 +260,9 @@ public class Group_ChatActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        /**
-         *for selecting image to send and get path of image
-         */
+
+         //for selecting image to send and get path of image
+
         if (requestCode == 123 && resultCode == Activity.RESULT_OK) {
 
             Uri selectedImage = data.getData();
@@ -313,9 +313,9 @@ public class Group_ChatActivity extends AppCompatActivity {
                 }
             });
         }
-        /**
-         *for selecting video to send and get path of video
-         */
+
+         //for selecting video to send and get path of video
+
         else if (requestCode == 456 && resultCode == Activity.RESULT_OK) {
             Uri selectedImage = data.getData();
             String[] filePathColumn = {MediaStore.Video.Media.DATA};

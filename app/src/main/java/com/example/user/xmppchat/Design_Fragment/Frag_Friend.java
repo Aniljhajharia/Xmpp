@@ -94,9 +94,9 @@ public class Frag_Friend extends BaseFragment {
         scaleDown.start();
         moveUp.start();
 
-        /**
-         * getting list of active users
-         */
+
+        // getting list of active users
+
         v.findViewById(R.id.active_frag).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -231,9 +231,9 @@ public class Frag_Friend extends BaseFragment {
                 System.out.println("Presence changed: " + presence.getFrom() + " " + presence);
             }
         });
-        /**
-         * on clicking of roster start chat Activity
-         */
+
+         // on clicking of roster start chat Activity
+
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -245,9 +245,9 @@ public class Frag_Friend extends BaseFragment {
                 startActivity(intent);
             }
         });
-        /**
-         * start chatting with active users
-         */
+
+         // start chatting with active users
+
         listView2.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -267,6 +267,7 @@ public class Frag_Friend extends BaseFragment {
     public void getActiveuser() {
         final Roster roster = Roster.getInstanceFor(MyXMPP.connection);
         Collection<RosterEntry> entries = roster.getEntries();
+
         arrayList.clear();
         for (RosterEntry entry : entries) {
             if ((roster.getPresence(entry.getUser()).getStatus()) != null) {

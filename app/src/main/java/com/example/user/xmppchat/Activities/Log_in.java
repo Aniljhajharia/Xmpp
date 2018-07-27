@@ -73,9 +73,9 @@ public class Log_in extends BaseActivity implements View.OnClickListener {
             window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
             window.setStatusBarColor(getResources().getColor(R.color.colorbar));
         }
-        /**
-         * used to register new user
-         */
+
+         // used to register new user
+
         findViewById(R.id.login).setOnClickListener(this);
         doBindService();
         findViewById(R.id.new_account).setOnClickListener(new View.OnClickListener() {

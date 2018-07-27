@@ -45,19 +45,30 @@ public class MessageAdapter extends ArrayAdapter<ChatBubble> {
         ChatBubble ChatBubble = getItem(position);
         int viewType = getItemViewType(position);
 
+          //to check if message is from friend or own message, if message is of user then set to right bubble
+
         if (ChatBubble.myMessage()) {
             convertView = inflater.inflate(R.layout.right_chat_bubble, parent, false);
             holder = new ViewHolder(convertView);
             convertView.setTag(holder);
+
+             // to check if message is text
             if (ChatBubble.Tag().equals("text")) {
                 holder.msg.setText(ChatBubble.getContent());
                 holder.imageView.setVisibility(View.GONE);
                 holder.jzVideoPlayerStandard.setVisibility(View.GONE);
+
+                 // to check if message is image
+
             } else if (ChatBubble.Tag().equals("image")) {
                 holder.jzVideoPlayerStandard.setVisibility(View.GONE);
                 holder.msg.setVisibility(View.GONE);
                 Glide.with(activity).load(ChatBubble.getContent()).into(holder.imageView);
-            } else {
+            }
+
+             // if message is video
+
+            else {
                 holder.imageView.setVisibility(View.GONE);
                 holder.msg.setVisibility(View.GONE);
                 video_url = ChatBubble.getContent();
@@ -69,7 +80,11 @@ public class MessageAdapter extends ArrayAdapter<ChatBubble> {
             }
 
 
-        } else {
+        }
+
+         // if message is not of user then set to left bubble
+
+        else {
             convertView = inflater.inflate(R.layout.left_chat_bubble, parent, false);
             holder = new ViewHolder(convertView);
             convertView.setTag(holder);
@@ -115,7 +130,6 @@ public class MessageAdapter extends ArrayAdapter<ChatBubble> {
         public ViewHolder(View v) {
             msg = (TextView) v.findViewById(R.id.txt_msg);
             imageView = (ImageView) v.findViewById(R.id.img);
-            //videoView = (VideoView) v.findViewById(R.id.video);
             jzVideoPlayerStandard = (JZVideoPlayerStandard) v.findViewById(R.id.videoplayer);
         }
     }

@@ -112,17 +112,17 @@ public class ChatActivity extends AppCompatActivity {
             window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
             window.setStatusBarColor(getResources().getColor(R.color.colorbar));
         }
-        /**
-         * emoji library
-         */
+
+         //emoji library
+
         EmojIconActions emojIcon = new EmojIconActions(this, view, emojiconEditText, imageView, "#FF7F50", "#FF7F50", "#FF7F50");
 
         emojIcon.ShowEmojIcon();
 
         emojIcon.setIconsIds(R.drawable.ic_keyboard_black_24dp, R.drawable.ic_insert_emoticon_black_24dp);
-/**
- * setting action bar
- */
+
+ // setting action bar
+
         ActionBar actionbar = getSupportActionBar();
         actionbar.setDisplayHomeAsUpEnabled(true);
         actionbar.setHomeAsUpIndicator(R.drawable.ic_arrow_back_black_24dp);
@@ -137,9 +137,9 @@ public class ChatActivity extends AppCompatActivity {
         msglist.setTranscriptMode(ListView.TRANSCRIPT_MODE_ALWAYS_SCROLL);
         msglist.setStackFromBottom(true);
         msglist.setAdapter(Log_in.adapter);
-        /**
-         * send button to send the message using xmpp to roster
-         */
+
+         //send button to send the message using xmpp to roster
+
         findViewById(R.id.send_btn).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -160,9 +160,9 @@ public class ChatActivity extends AppCompatActivity {
                 }
             }
         });
-        /**
-         * sending images to roster
-         */
+
+         // sending images to roster
+
         findViewById(R.id.send_btn_image).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -179,9 +179,9 @@ public class ChatActivity extends AppCompatActivity {
                         dialog.dismiss();
                     }
                 });
-                /**
-                 * for sending video to user
-                 */
+
+                 // for sending video to user
+
                 dialog.findViewById(R.id.video_dialog).setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
@@ -196,9 +196,9 @@ public class ChatActivity extends AppCompatActivity {
         });
         msglist.setLongClickable(true);
         msglist.setClickable(true);
-        /**
-         * for deleting selected item on long press
-         */
+
+         // for deleting selected item on long press
+
         msglist.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
 
             @Override
@@ -280,9 +280,9 @@ public class ChatActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, final int resultCode, Intent data) {
         ActivityCompat.requestPermissions(ChatActivity.this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, 123);
         super.onActivityResult(requestCode, resultCode, data);
-        /**
-         * used to select image and get path of image
-         */
+
+         // used to select image and get path of image
+
         if (requestCode == 123 && resultCode == Activity.RESULT_OK) {
 
             Uri selectedImage = data.getData();
@@ -299,9 +299,9 @@ public class ChatActivity extends AppCompatActivity {
             RequestBody reqFile = RequestBody.create(MediaType.parse("image/*"), file);
             MultipartBody.Part body = MultipartBody.Part.createFormData("upload", file.getName(), reqFile);
             RequestBody name = RequestBody.create(MediaType.parse("text/plain"), "upload_test");
-            /**
-             * using retrofit to get response from server
-             */
+
+             // using retrofit to get response from server
+
             ApiClient apiClient = new ApiClient();
             Retrofit retrofit = apiClient.getClient();
             ApiInterface api = retrofit.create(ApiInterface.class);
@@ -331,9 +331,9 @@ public class ChatActivity extends AppCompatActivity {
                 }
             });
         }
-        /**
-         * selecting video for sending and getting path
-         */
+
+         // selecting video for sending and getting path
+
         else if (requestCode == 456 && resultCode == Activity.RESULT_OK) {
             Uri selectedImage = data.getData();
             String[] filePathColumn = {MediaStore.Video.Media.DATA};
@@ -365,7 +365,7 @@ public class ChatActivity extends AppCompatActivity {
      * @param file
      * @param filepath
      */
-    public void sendVideo(final File file, final String filepath) {
+    public  void sendVideo(final File file, final String filepath) {
         AsyncTask<Void, Void, Map> connectionThread = new AsyncTask<Void, Void, Map>() {
             Map config;
 
